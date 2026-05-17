@@ -1427,5 +1427,5 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(port, host, () => {
-  console.log(`Korean legal agent running at http://${host}:${port}`);
+  console.log(`Korean legal assistant running at http://${host}:${port}`);
 });

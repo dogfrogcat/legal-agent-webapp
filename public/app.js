@@ -388,6 +388,7 @@ const QUICKSTART_CONFIG = {
 };
 
 const RESPONSE_ACTIONS = [
+  { id: "nextSteps", label: "다음 행동 제안" },
   { id: "notice", label: "내용증명으로 만들기" },
   { id: "evidence", label: "증거 체크리스트" },
   { id: "rebuttal", label: "상대방 반박 예상" },
@@ -721,6 +722,10 @@ async function handleResponseAction(actionId, answerText) {
   }
 
   const prompts = {
+    nextSteps: [
+      "위 답변을 바탕으로 지금 당장 해야 할 행동을 정리해줘.",
+      "오늘 할 일, 3일 안에 할 일, 하지 말아야 할 일을 나눠서 제안하고, 각 행동의 이유와 우선순위도 알려줘."
+    ],
     notice: [
       "위 답변과 내 사건을 바탕으로 내용증명 초안을 만들어줘.",
       "상대방이 읽어도 과격하지 않게 쓰고, 위험한 문구와 대체 문구도 같이 알려줘."
