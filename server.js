@@ -267,6 +267,50 @@ async function refreshSupabaseSession(refreshToken) {
   });
 }
 
+function getSupabaseAccessToken(req) {
+  const cookies = parseCookies(req.headers.cookie || "");
+  return cookies.legal_agent_access_token || "";
+}
+
+async function supabaseRestFetch(req, path, options = {}) {
+  const accessToken = getSupabaseAccessToken(req);
+  if (!supabaseUrl || !supabaseAnonKey || !accessToken) {
+    const error = new Error("사건 저장은 Supabase 로그인 상태에서 사용할 수 있습니다.");
+    error.statusCode = 401;
+    throw error;
+  }
+
+  const response = await fetch(`${supabaseUrl}/rest/v1${path}`, {
+    ...options,
+    headers: {
+      apikey: supabaseAnonKey,
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+      ...(options.headers || {})
+    }
+  });
+  const data = await readJsonResponse(response, "Supabase DB");
+
+  if (!response.ok) {
+    const error = new Error(formatSupabaseDbError(data, response.status));
+    error.statusCode = response.status;
+    throw error;
+  }
+
+  return data;
+}
+
+function formatSupabaseDbError(data, statusCode) {
+  const message = data?.message || data?.msg || data?.details || data?.hint || data?.code || "";
+  if (statusCode === 404 || /relation .* does not exist|schema cache|legal_cases|legal_messages/i.test(message)) {
+    return "사건 저장 테이블이 아직 없습니다. Supabase SQL 설정 후 계정 저장을 사용할 수 있습니다.";
+  }
+  if (statusCode === 401 || statusCode === 403) {
+    return "사건 파일함 권한을 확인해주세요. 다시 로그인하면 해결될 수 있습니다.";
+  }
+  return message || "사건 파일함 처리 중 오류가 발생했습니다.";
+}
+
 function formatSupabaseError(data, statusCode) {
   const message = data?.msg || data?.message || data?.error_description || data?.error || "";
 
@@ -804,6 +848,117 @@ function sanitizeCaseType(caseType = "general") {
   return CASE_TYPE_PROFILES[normalized] ? normalized : "general";
 }
 
+function sanitizeMode(mode = "dispute") {
+  const normalized = String(mode || "dispute");
+  return ["dispute", "precedent", "qa", "drafting"].includes(normalized) ? normalized : "dispute";
+}
+
+async function requireSupabaseUser(req, res) {
+  const authState = await getAuthState(req);
+  if (!authState.authenticated || !authState.user?.id || authState.authMode !== "supabase") {
+    sendJson(res, 401, { error: "로그인이 필요합니다." }, authState.headers);
+    return null;
+  }
+  return authState;
+}
+
+async function handleListCases(req, res) {
+  let authState;
+  try {
+    authState = await requireSupabaseUser(req, res);
+    if (!authState) return;
+    const data = await supabaseRestFetch(
+      req,
+      "/legal_cases?select=id,title,mode,case_type,created_at,updated_at&order=updated_at.desc&limit=50"
+    );
+    sendJson(res, 200, { cases: data }, authState.headers);
+  } catch (error) {
+    sendJson(res, error.statusCode || 500, { error: error.message }, authState?.headers || {});
+  }
+}
+
+async function handleCreateCase(req, res) {
+  let authState;
+  try {
+    authState = await requireSupabaseUser(req, res);
+    if (!authState) return;
+    const payload = JSON.parse(await readRequestBody(req));
+    const title = String(payload.title || "새 법률 사건").trim().slice(0, 80) || "새 법률 사건";
+    const mode = sanitizeMode(payload.mode);
+    const caseType = sanitizeCaseType(payload.caseType);
+    const data = await supabaseRestFetch(req, "/legal_cases", {
+      method: "POST",
+      headers: { Prefer: "return=representation" },
+      body: JSON.stringify({
+        user_id: authState.user.id,
+        title,
+        mode,
+        case_type: caseType
+      })
+    });
+    sendJson(res, 200, { case: Array.isArray(data) ? data[0] : data }, authState.headers);
+  } catch (error) {
+    sendJson(res, error.statusCode || 500, { error: error.message }, authState?.headers || {});
+  }
+}
+
+async function handleCaseMessages(req, res, caseId) {
+  let authState;
+  try {
+    authState = await requireSupabaseUser(req, res);
+    if (!authState) return;
+
+    if (req.method === "GET") {
+      const data = await supabaseRestFetch(
+        req,
+        `/legal_messages?select=id,role,content,created_at&case_id=eq.${encodeURIComponent(caseId)}&order=created_at.asc&limit=200`
+      );
+      sendJson(
+        res,
+        200,
+        {
+          messages: data.map((item) => ({
+            id: item.id,
+            role: item.role,
+            content: item.content,
+            createdAt: item.created_at
+          }))
+        },
+        authState.headers
+      );
+      return;
+    }
+
+    const payload = JSON.parse(await readRequestBody(req));
+    const messages = Array.isArray(payload.messages) ? payload.messages.slice(0, 10) : [];
+    const rows = messages
+      .map((message) => ({
+        user_id: authState.user.id,
+        case_id: caseId,
+        role: message.role === "assistant" ? "assistant" : "user",
+        content: String(message.content || "").slice(0, 30000)
+      }))
+      .filter((message) => message.content.trim());
+
+    if (rows.length) {
+      await supabaseRestFetch(req, "/legal_messages", {
+        method: "POST",
+        headers: { Prefer: "return=minimal" },
+        body: JSON.stringify(rows)
+      });
+      await supabaseRestFetch(req, `/legal_cases?id=eq.${encodeURIComponent(caseId)}`, {
+        method: "PATCH",
+        headers: { Prefer: "return=minimal" },
+        body: JSON.stringify({ updated_at: new Date().toISOString() })
+      });
+    }
+
+    sendJson(res, 200, { ok: true }, authState.headers);
+  } catch (error) {
+    sendJson(res, error.statusCode || 500, { error: error.message }, authState?.headers || {});
+  }
+}
+
 async function handleChat(req, res) {
   let authState;
   try {
@@ -1209,37 +1364,55 @@ async function serveStatic(req, res) {
 }
 
 const server = http.createServer((req, res) => {
-  if (req.method === "GET" && req.url === "/healthz") {
+  const requestUrl = new URL(req.url, `http://${req.headers.host}`);
+  const caseMessagesMatch = requestUrl.pathname.match(/^\/api\/cases\/([^/]+)\/messages$/);
+
+  if (req.method === "GET" && requestUrl.pathname === "/healthz") {
     sendJson(res, 200, { ok: true });
     return;
   }
 
-  if (req.method === "GET" && req.url === "/api/session") {
+  if (req.method === "GET" && requestUrl.pathname === "/api/session") {
     void handleSession(req, res);
     return;
   }
 
-  if (req.method === "POST" && req.url === "/api/login") {
+  if (req.method === "POST" && requestUrl.pathname === "/api/login") {
     void handleLogin(req, res);
     return;
   }
 
-  if (req.method === "POST" && req.url === "/api/auth/continue") {
+  if (req.method === "POST" && requestUrl.pathname === "/api/auth/continue") {
     void handleAuthContinue(req, res);
     return;
   }
 
-  if (req.method === "POST" && req.url === "/api/signup") {
+  if (req.method === "POST" && requestUrl.pathname === "/api/signup") {
     void handleSignup(req, res);
     return;
   }
 
-  if (req.method === "POST" && req.url === "/api/logout") {
+  if (req.method === "POST" && requestUrl.pathname === "/api/logout") {
     handleLogout(req, res);
     return;
   }
 
-  if (req.method === "POST" && req.url === "/api/chat") {
+  if (req.method === "GET" && requestUrl.pathname === "/api/cases") {
+    void handleListCases(req, res);
+    return;
+  }
+
+  if (req.method === "POST" && requestUrl.pathname === "/api/cases") {
+    void handleCreateCase(req, res);
+    return;
+  }
+
+  if ((req.method === "GET" || req.method === "POST") && caseMessagesMatch) {
+    void handleCaseMessages(req, res, decodeURIComponent(caseMessagesMatch[1]));
+    return;
+  }
+
+  if (req.method === "POST" && requestUrl.pathname === "/api/chat") {
     void handleChat(req, res);
     return;
   }

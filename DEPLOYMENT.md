@@ -13,6 +13,17 @@ Authentication 설정에서는 Email provider를 켜고, 배포 주소를 Site U
 
 Supabase 설정이 있으면 앱은 이메일 회원가입/로그인 모드로 동작합니다. Supabase 설정이 없고 `APP_PASSWORD`만 있으면 공유 비밀번호 모드로 동작합니다.
 
+## 사건 파일함 DB 설정
+
+대화 기록을 계정별 사건 파일로 저장하려면 Supabase Dashboard의 `SQL Editor`에서 [supabase-legal-tables.sql](/Users/minjae/Documents/New%20project/legal-agent-webapp/supabase-legal-tables.sql)을 실행합니다.
+
+이 SQL은 아래 테이블과 RLS 정책을 만듭니다.
+
+- `legal_cases`: 사건 제목, 작업 모드, 사건 유형
+- `legal_messages`: 사건별 사용자/AI 대화 기록
+
+SQL을 아직 실행하지 않아도 앱은 같은 브라우저의 localStorage에 임시 저장합니다. 다만 다른 기기나 브라우저에서는 이어서 볼 수 없습니다.
+
 ## 추천: Render
 
 1. GitHub에 이 폴더를 새 저장소로 올립니다.

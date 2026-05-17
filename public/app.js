@@ -27,7 +27,15 @@ const modeStatusTitle = document.querySelector("#modeStatusTitle");
 const modeStatusText = document.querySelector("#modeStatusText");
 const caseStatusText = document.querySelector("#caseStatusText");
 const modeButtons = Array.from(document.querySelectorAll(".mode-button"));
+const caseCategoryButtons = Array.from(document.querySelectorAll(".case-category-button"));
 const caseTypeButtons = Array.from(document.querySelectorAll(".case-type-button"));
+const quickStartPanel = document.querySelector("#quickStartPanel");
+const quickStartCards = Array.from(document.querySelectorAll(".quickstart-card"));
+const caseFilePanel = document.querySelector("#caseFilePanel");
+const caseFileStatus = document.querySelector("#caseFileStatus");
+const caseList = document.querySelector("#caseList");
+const newCaseButton = document.querySelector("#newCaseButton");
+const saveCaseButton = document.querySelector("#saveCaseButton");
 const documentToolbox = document.querySelector("#documentToolbox");
 const contentProofType = document.querySelector("#contentProofType");
 const contentProofTone = document.querySelector("#contentProofTone");
@@ -238,6 +246,42 @@ const CONTENT_PROOF_CONFIG = {
     caseType: "general",
     demand: "대여금 변제",
     factsHint: "빌려준 날짜, 금액, 변제기, 송금내역, 일부 변제, 상대방의 변제 약속을 적어주세요."
+  },
+  settlement: {
+    title: "합의서 위험문구 검토",
+    caseType: "general",
+    demand: "합의 조건 정리 및 위험 문구 대체",
+    factsHint: "합의하려는 금액, 지급일, 향후 청구 유보 여부, 상대방이 넣자고 한 문구를 적어주세요."
+  },
+  complaint: {
+    title: "고소장 초안",
+    caseType: "complaintDrafting",
+    demand: "범죄사실과 증거목록이 분리된 고소장 초안",
+    factsHint: "피고소인 정보, 사건 일시·장소, 상대방 말과 행동, 피해 내용, 보유 증거를 시간순으로 적어주세요."
+  },
+  laborPetition: {
+    title: "노동청 진정서",
+    caseType: "unpaidWages",
+    demand: "미지급 임금에 대한 노동청 진정서 초안",
+    factsHint: "회사명, 근무기간, 임금 약정, 체불 항목과 금액, 사업주 답변, 퇴사 여부를 적어주세요."
+  },
+  consumerApplication: {
+    title: "소비자원 피해구제 신청서",
+    caseType: "consumer",
+    demand: "한국소비자원 피해구제 신청용 사실관계 정리",
+    factsHint: "계약일, 결제금액, 상품·서비스 내용, 환불 요구일, 업체 답변, 원하는 합의안을 적어주세요."
+  },
+  paymentOrder: {
+    title: "지급명령 신청 전 정리",
+    caseType: "general",
+    demand: "채권 금액, 증거, 상대방 주소 확인사항 정리",
+    factsHint: "돈을 받을 근거, 금액, 변제기, 상대방 주소, 송금내역·계약서·확인 문자 등 증거를 적어주세요."
+  },
+  lawsuitFacts: {
+    title: "소장용 사실관계 정리",
+    caseType: "general",
+    demand: "청구취지·청구원인 작성 전 사실관계 정리",
+    factsHint: "원고/피고, 청구금액, 사건 경위, 상대방 귀책, 손해액, 증거를 시간순으로 적어주세요."
   }
 };
 
@@ -249,18 +293,115 @@ const CONTENT_PROOF_TONE_LABELS = {
 
 let mode = "dispute";
 let caseType = "general";
+let activeCaseCategory = "all";
 let history = [];
 let attachedImages = [];
+let caseFiles = [];
+let currentCaseId = null;
+let caseStorageMode = "local";
 let authRequired = false;
 let authMode = "none";
 let currentUser = null;
 const MAX_IMAGES = 4;
 const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
 const PRIVACY_ACCEPTED_KEY = "legalAgentPrivacyAccepted";
+const CASE_FILES_KEY = "legalAgentCaseFiles";
+
+const CASE_CATEGORY_DEFAULTS = {
+  all: "general",
+  labor: "unpaidWages",
+  housing: "deposit",
+  consumer: "consumer",
+  criminal: "fraudProperty",
+  document: "contract"
+};
+
+const QUICKSTART_CONFIG = {
+  damage: {
+    mode: "dispute",
+    caseType: "medicalBeauty",
+    text: [
+      "피해 사건을 쟁점 정리해줘.",
+      "",
+      "- 사건 유형:",
+      "- 발생일:",
+      "- 상대방:",
+      "- 피해 내용:",
+      "- 현재 가진 증거:",
+      "- 상대방 주장 또는 답변:",
+      "- 원하는 결과:",
+      "",
+      "일부승소 가능성, 책임비율, 현실적 합의선, 지금 해야 할 행동을 나눠서 알려줘."
+    ].join("\n")
+  },
+  money: {
+    mode: "dispute",
+    caseType: "unpaidWages",
+    text: [
+      "돈을 받기 위한 절차를 정리해줘.",
+      "",
+      "- 받을 돈의 종류:",
+      "- 금액:",
+      "- 지급하기로 한 날짜:",
+      "- 상대방 정보:",
+      "- 계약서/문자/송금내역 등 증거:",
+      "- 지금까지 한 요구:",
+      "",
+      "노동청, 내용증명, 지급명령, 소송 중 어떤 순서가 유리한지 알려줘."
+    ].join("\n")
+  },
+  criminal: {
+    mode: "dispute",
+    caseType: "fraudProperty",
+    text: [
+      "형사 고소 또는 형사절차 대응 가능성을 검토해줘.",
+      "",
+      "- 혐의 또는 사건 유형:",
+      "- 발생일과 장소:",
+      "- 상대방이 한 말/행동:",
+      "- 피해 내용:",
+      "- 증거:",
+      "- 현재 경찰/검찰 단계:",
+      "- 내가 원하는 결과:",
+      "",
+      "범죄 성립 가능성, 증거 부족한 부분, 고소 전 리스크, 민사와 병행할지 알려줘."
+    ].join("\n")
+  },
+  document: {
+    mode: "drafting",
+    caseType: "consumer",
+    text: [
+      "아래 내용을 바탕으로 제출 또는 발송 가능한 문서 초안을 만들어줘.",
+      "",
+      "- 문서 종류:",
+      "- 상대방:",
+      "- 요구사항:",
+      "- 사실관계:",
+      "- 보유 증거:",
+      "- 피하고 싶은 문구:",
+      "",
+      "위험한 표현은 순화하고, 빈 정보는 [확인 필요]로 남겨줘."
+    ].join("\n")
+  }
+};
+
+const RESPONSE_ACTIONS = [
+  { id: "notice", label: "내용증명으로 만들기" },
+  { id: "evidence", label: "증거 체크리스트" },
+  { id: "rebuttal", label: "상대방 반박 예상" },
+  { id: "settlement", label: "합의문 문구 검토" },
+  { id: "copy", label: "요약 복사" }
+];
 
 modeButtons.forEach((button) => {
   button.addEventListener("click", () => {
     setMode(button.dataset.mode);
+  });
+});
+
+caseCategoryButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    setCaseCategory(button.dataset.caseCategory, { selectDefault: true });
   });
 });
 
@@ -270,7 +411,14 @@ caseTypeButtons.forEach((button) => {
   });
 });
 
+quickStartCards.forEach((button) => {
+  button.addEventListener("click", () => {
+    applyQuickStart(button.dataset.quickstart);
+  });
+});
+
 setMode(mode);
+setCaseCategory(activeCaseCategory);
 setCaseType(caseType);
 applyContentProofPreset();
 void initializeAuth();
@@ -306,18 +454,43 @@ contentProofDraftButton.addEventListener("click", () => {
 logoutButton.addEventListener("click", async () => {
   await fetch("/api/logout", { method: "POST" });
   currentUser = null;
+  caseFiles = [];
+  currentCaseId = null;
+  renderCaseFiles();
   showLogin("로그아웃되었습니다.");
 });
 
 clearButton.addEventListener("click", () => {
   history = [];
+  currentCaseId = null;
   clearAttachments();
   chat.innerHTML = "";
+  quickStartPanel.hidden = false;
   addMessage({
     role: "assistant",
     text: "새 대화를 시작합니다. 사실관계나 문서를 붙여주시면 한국법 기준으로 정리해드릴게요."
   });
+  updateCaseFileStatus("현재 대화는 아직 저장 전입니다.");
   input.focus();
+});
+
+newCaseButton.addEventListener("click", () => {
+  history = [];
+  currentCaseId = null;
+  clearAttachments();
+  chat.innerHTML = "";
+  quickStartPanel.hidden = false;
+  addMessage({
+    role: "assistant",
+    text: "새 사건 파일을 시작합니다. 첫 질문 도우미를 고르거나 사실관계를 바로 입력해주세요."
+  });
+  renderCaseFiles();
+  updateCaseFileStatus("새 사건을 시작했습니다. 첫 답변 이후 자동 저장됩니다.");
+  input.focus();
+});
+
+saveCaseButton.addEventListener("click", async () => {
+  await saveCurrentCaseSnapshot();
 });
 
 attachButton.addEventListener("click", () => {
@@ -363,8 +536,10 @@ form.addEventListener("submit", async (event) => {
   input.value = "";
   const imagesForRequest = attachedImages;
   const selectedCaseType = caseType;
+  const selectedMode = mode;
   const selectedCaseConfig = CASE_TYPE_CONFIG[selectedCaseType] || CASE_TYPE_CONFIG.general;
   clearAttachments();
+  quickStartPanel.hidden = true;
   addMessage({
     role: "user",
     text: message || "첨부 이미지 분석",
@@ -399,7 +574,7 @@ form.addEventListener("submit", async (event) => {
       body: JSON.stringify({
         message,
         images: imagesForRequest,
-        mode,
+        mode: selectedMode,
         caseType: selectedCaseType,
         history,
         useKnowledgeBase: knowledgeBase.checked,
@@ -425,9 +600,16 @@ form.addEventListener("submit", async (event) => {
         ...(data.citations || []),
         ...(data.sources || []),
         ...knowledgeSources
-      ])
+      ]),
+      actions: true
     });
     history.push({ role: "assistant", content: data.text || "" });
+    await persistConversationTurn({
+      userText: message || "첨부 이미지 분석",
+      assistantText: data.text || "",
+      selectedMode,
+      selectedCaseType
+    });
   } catch (error) {
     loading.remove();
     addMessage({
@@ -439,7 +621,7 @@ form.addEventListener("submit", async (event) => {
   }
 });
 
-function addMessage({ role, text, citations = [], images = [], pending = false, pendingSteps = [] }) {
+function addMessage({ role, text, citations = [], images = [], pending = false, pendingSteps = [], actions = false }) {
   const article = document.createElement("article");
   article.className = `message ${role}`;
   if (pending) article.classList.add("pending");
@@ -490,10 +672,72 @@ function addMessage({ role, text, citations = [], images = [], pending = false, 
     bubble.append(sourceBox);
   }
 
+  if (actions && role === "assistant" && !pending) {
+    renderResponseActions(bubble, text);
+  }
+
   article.append(avatar, bubble);
   chat.append(article);
   chat.scrollTop = chat.scrollHeight;
   return article;
+}
+
+function renderResponseActions(container, answerText) {
+  const actions = document.createElement("div");
+  actions.className = "response-actions";
+
+  RESPONSE_ACTIONS.forEach((action) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "response-action-button";
+    button.textContent = action.label;
+    button.addEventListener("click", () => {
+      handleResponseAction(action.id, answerText);
+    });
+    actions.append(button);
+  });
+
+  container.append(actions);
+}
+
+async function handleResponseAction(actionId, answerText) {
+  if (actionId === "copy") {
+    const summary = answerText.split("\n").slice(0, 8).join("\n").trim();
+    try {
+      await navigator.clipboard.writeText(summary || answerText);
+      updateCaseFileStatus("답변 요약을 클립보드에 복사했습니다.");
+    } catch {
+      input.value = summary || answerText;
+      updateCaseFileStatus("클립보드 복사가 막혀 입력창에 요약을 넣었습니다.");
+    }
+    return;
+  }
+
+  const prompts = {
+    notice: [
+      "위 답변과 내 사건을 바탕으로 내용증명 초안을 만들어줘.",
+      "상대방이 읽어도 과격하지 않게 쓰고, 위험한 문구와 대체 문구도 같이 알려줘."
+    ],
+    evidence: [
+      "위 답변 기준으로 증거 체크리스트를 만들어줘.",
+      "이미 있는 증거, 추가로 확보할 증거, 병원/기관에서 받을 자료, 제출 우선순위를 표로 정리해줘."
+    ],
+    rebuttal: [
+      "위 사건에서 상대방이 할 수 있는 반박을 예상해줘.",
+      "각 반박에 대한 재반박 논리와 추가로 필요한 증거를 같이 정리해줘."
+    ],
+    settlement: [
+      "위 사건에서 합의문 문구를 검토해줘.",
+      "위험한 문구, 넣으면 안 되는 문구, 향후 청구 가능성을 열어두는 대체 문구를 제안해줘."
+    ]
+  };
+
+  if (actionId === "notice") {
+    setMode("drafting");
+  }
+
+  input.value = `${prompts[actionId]?.join("\n") || "위 답변을 바탕으로 다음 행동을 정리해줘."}\n\n참고할 이전 답변 요약:\n${answerText.slice(0, 1800)}`;
+  input.focus();
 }
 
 function buildPendingSteps() {
@@ -557,8 +801,16 @@ function setBusy(isBusy) {
   attachButton.disabled = isBusy;
   contentProofFillButton.disabled = isBusy;
   contentProofDraftButton.disabled = isBusy;
+  newCaseButton.disabled = isBusy;
+  saveCaseButton.disabled = isBusy;
+  quickStartCards.forEach((button) => {
+    button.disabled = isBusy;
+  });
   documentToolbox.querySelectorAll("input, select, textarea").forEach((field) => {
     field.disabled = isBusy;
+  });
+  caseCategoryButtons.forEach((button) => {
+    button.disabled = isBusy;
   });
   caseTypeButtons.forEach((button) => {
     button.disabled = isBusy;
@@ -579,6 +831,7 @@ async function initializeAuth() {
     currentUser = data.user || null;
     configureAuthForm();
     logoutButton.hidden = !authRequired;
+    await loadCaseFiles();
 
     if (!authRequired || data.authenticated) {
       showApp();
@@ -619,6 +872,7 @@ async function submitAuth() {
     currentUser = data.user || null;
     storePrivacyConsent();
     loginPassword.value = "";
+    await loadCaseFiles();
     showApp();
   } catch (error) {
     loginError.textContent = error.message;
@@ -703,6 +957,266 @@ function showLogin(message = "") {
   getAuthFocusTarget().focus();
 }
 
+async function loadCaseFiles() {
+  const canUseServer = authMode === "supabase" && currentUser?.id;
+  caseStorageMode = canUseServer ? "server" : "local";
+
+  if (canUseServer) {
+    try {
+      const data = await fetchJson("/api/cases");
+      caseFiles = normalizeCases(data.cases || []);
+      updateCaseFileStatus("사건 파일함이 계정에 연결되었습니다.");
+      renderCaseFiles();
+      return;
+    } catch {
+      caseStorageMode = "local";
+      updateCaseFileStatus("Supabase 사건 테이블이 없어서 이 브라우저에 임시 저장합니다.");
+    }
+  }
+
+  caseFiles = loadLocalCases();
+  renderCaseFiles();
+}
+
+function normalizeCases(cases) {
+  return cases.map((item) => ({
+    id: item.id,
+    title: item.title || "제목 없는 사건",
+    mode: item.mode || "dispute",
+    caseType: item.caseType || item.case_type || "general",
+    updatedAt: item.updatedAt || item.updated_at || new Date().toISOString(),
+    messages: item.messages || []
+  }));
+}
+
+async function fetchJson(url, options = {}) {
+  const res = await fetch(url, {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...(options.headers || {})
+    }
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || "요청에 실패했습니다.");
+  return data;
+}
+
+function loadLocalCases() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(CASE_FILES_KEY) || "[]");
+    return Array.isArray(parsed) ? normalizeCases(parsed) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveLocalCases() {
+  try {
+    localStorage.setItem(CASE_FILES_KEY, JSON.stringify(caseFiles.slice(0, 50)));
+  } catch {
+    updateCaseFileStatus("브라우저 저장 공간이 부족해 사건 파일을 저장하지 못했습니다.");
+  }
+}
+
+function renderCaseFiles() {
+  caseList.innerHTML = "";
+
+  caseFiles.slice(0, 12).forEach((caseFile) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "case-file-item";
+    button.classList.toggle("active", caseFile.id === currentCaseId);
+    button.innerHTML = `<strong></strong><span></span>`;
+    button.querySelector("strong").textContent = caseFile.title;
+    button.querySelector("span").textContent = `${getCaseTitle(caseFile.caseType)} · ${formatCaseTime(caseFile.updatedAt)}`;
+    button.addEventListener("click", () => {
+      void openCaseFile(caseFile.id);
+    });
+    caseList.append(button);
+  });
+}
+
+async function openCaseFile(caseId) {
+  const caseFile = caseFiles.find((item) => item.id === caseId);
+  if (!caseFile) return;
+
+  let messages = caseFile.messages || [];
+  if (caseStorageMode === "server") {
+    try {
+      const data = await fetchJson(`/api/cases/${encodeURIComponent(caseId)}/messages`);
+      messages = data.messages || [];
+      caseFile.messages = messages;
+    } catch (error) {
+      updateCaseFileStatus(error.message);
+    }
+  }
+
+  currentCaseId = caseId;
+  history = messages.map((item) => ({
+    role: item.role === "assistant" ? "assistant" : "user",
+    content: item.content || ""
+  }));
+  setMode(caseFile.mode || "dispute");
+  setCaseType(caseFile.caseType || "general");
+  chat.innerHTML = "";
+
+  if (!messages.length) {
+    quickStartPanel.hidden = false;
+    addMessage({ role: "assistant", text: "이 사건 파일에는 아직 저장된 대화가 없습니다. 사실관계를 입력해 주세요." });
+  } else {
+    quickStartPanel.hidden = true;
+    messages.forEach((item) => {
+      addMessage({
+        role: item.role === "assistant" ? "assistant" : "user",
+        text: item.content || "",
+        actions: item.role === "assistant"
+      });
+    });
+  }
+
+  updateCaseFileStatus(`열린 사건: ${caseFile.title}`);
+  renderCaseFiles();
+  input.focus();
+}
+
+async function saveCurrentCaseSnapshot() {
+  if (!history.length) {
+    updateCaseFileStatus("저장할 대화가 아직 없습니다.");
+    return;
+  }
+
+  const caseFile = await ensureCurrentCase({
+    titleSeed: history.find((item) => item.role === "user")?.content || "새 법률 사건",
+    selectedMode: mode,
+    selectedCaseType: caseType
+  });
+
+  if (!caseFile) return;
+
+  if (caseStorageMode === "local") {
+    caseFile.messages = history.map((item) => ({
+      role: item.role,
+      content: item.content,
+      createdAt: new Date().toISOString()
+    }));
+    caseFile.updatedAt = new Date().toISOString();
+    saveLocalCases();
+  }
+
+  renderCaseFiles();
+  updateCaseFileStatus(`저장됨: ${caseFile.title}`);
+}
+
+async function persistConversationTurn({ userText, assistantText, selectedMode, selectedCaseType }) {
+  const caseFile = await ensureCurrentCase({
+    titleSeed: userText,
+    selectedMode,
+    selectedCaseType
+  });
+  if (!caseFile) return;
+
+  const now = new Date().toISOString();
+  const messages = [
+    { role: "user", content: userText, createdAt: now },
+    { role: "assistant", content: assistantText, createdAt: now }
+  ];
+
+  if (caseStorageMode === "server") {
+    try {
+      await fetchJson(`/api/cases/${encodeURIComponent(caseFile.id)}/messages`, {
+        method: "POST",
+        body: JSON.stringify({ messages })
+      });
+      caseFile.updatedAt = now;
+      updateCaseFileStatus(`자동 저장됨: ${caseFile.title}`);
+    } catch (error) {
+      caseStorageMode = "local";
+      updateCaseFileStatus(`${error.message} 이 브라우저에 임시 저장합니다.`);
+    }
+  }
+
+  if (caseStorageMode === "local") {
+    caseFile.messages = [...(caseFile.messages || []), ...messages];
+    caseFile.updatedAt = now;
+    saveLocalCases();
+    updateCaseFileStatus(`이 브라우저에 저장됨: ${caseFile.title}`);
+  }
+
+  sortCaseFiles();
+  renderCaseFiles();
+}
+
+async function ensureCurrentCase({ titleSeed, selectedMode, selectedCaseType }) {
+  if (currentCaseId) {
+    return caseFiles.find((item) => item.id === currentCaseId) || null;
+  }
+
+  const title = buildCaseTitle(titleSeed);
+  const now = new Date().toISOString();
+
+  if (caseStorageMode === "server") {
+    try {
+      const data = await fetchJson("/api/cases", {
+        method: "POST",
+        body: JSON.stringify({ title, mode: selectedMode, caseType: selectedCaseType })
+      });
+      const created = normalizeCases([data.case])[0];
+      caseFiles.unshift(created);
+      currentCaseId = created.id;
+      return created;
+    } catch (error) {
+      caseStorageMode = "local";
+      updateCaseFileStatus(`${error.message} 이 브라우저에 임시 저장합니다.`);
+    }
+  }
+
+  const localCase = {
+    id: `local-${Date.now()}`,
+    title,
+    mode: selectedMode,
+    caseType: selectedCaseType,
+    updatedAt: now,
+    messages: []
+  };
+  caseFiles.unshift(localCase);
+  currentCaseId = localCase.id;
+  saveLocalCases();
+  return localCase;
+}
+
+function sortCaseFiles() {
+  caseFiles.sort((a, b) => new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0));
+}
+
+function buildCaseTitle(seed) {
+  const cleaned = String(seed || "새 법률 사건")
+    .replace(/\[사건 유형:[^\]]+\]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  return cleaned.slice(0, 28) || "새 법률 사건";
+}
+
+function getCaseTitle(targetCaseType) {
+  return CASE_TYPE_CONFIG[targetCaseType]?.title || "일반";
+}
+
+function formatCaseTime(value) {
+  if (!value) return "방금";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "방금";
+  return new Intl.DateTimeFormat("ko-KR", {
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  }).format(date);
+}
+
+function updateCaseFileStatus(message) {
+  caseFileStatus.textContent = message;
+}
+
 function readFileAsDataUrl(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -761,12 +1275,24 @@ function fillContentProofPrompt() {
   input.focus();
 }
 
+function applyQuickStart(type) {
+  const config = QUICKSTART_CONFIG[type];
+  if (!config) return;
+
+  setMode(config.mode);
+  setCaseType(config.caseType);
+  input.value = config.text;
+  quickStartPanel.hidden = true;
+  input.focus();
+}
+
 function buildContentProofPrompt(config) {
   const valueOrBlank = (value) => String(value || "").trim() || "[확인 필요]";
   const toneLabel = CONTENT_PROOF_TONE_LABELS[contentProofTone.value] || CONTENT_PROOF_TONE_LABELS.balanced;
+  const isNotice = ["refund", "wage", "deposit", "beauty", "defamation", "loan"].includes(contentProofType.value);
 
   return [
-    "내용증명 검토용 초안을 작성해줘.",
+    `${config.title} 검토용 초안을 작성해줘.`,
     "",
     "문서 작성 조건:",
     `- 문서 유형: ${config.title}`,
@@ -785,10 +1311,14 @@ function buildContentProofPrompt(config) {
     "",
     "작성 방식:",
     "- 첫 줄에 '검토용 초안'이라고 표시해줘.",
-    "- 제목, 발신인, 수신인, 통지 취지, 사실관계, 요구사항, 답변기한, 미이행 시 조치, 첨부자료, 발송 전 체크리스트 순서로 작성해줘.",
+    isNotice
+      ? "- 제목, 발신인, 수신인, 통지 취지, 사실관계, 요구사항, 답변기한, 미이행 시 조치, 첨부자료, 발송 전 체크리스트 순서로 작성해줘."
+      : "- 제목, 작성 목적, 당사자, 사실관계, 핵심 쟁점, 요구사항 또는 신청취지, 증거목록, 제출 전 체크리스트 순서로 작성해줘.",
     "- 비난·협박·모욕 표현은 빼고, 기관이나 법원이 읽어도 차분한 문장으로 써줘.",
     "- 빈 정보는 임의로 만들지 말고 [확인 필요]로 남겨줘.",
-    "- 내용증명은 권리를 확정하는 문서가 아니라 발송한 내용과 시점을 증명하는 수단이라는 한계를 짧게 설명해줘.",
+    isNotice
+      ? "- 내용증명은 권리를 확정하는 문서가 아니라 발송한 내용과 시점을 증명하는 수단이라는 한계를 짧게 설명해줘."
+      : "- 이 초안은 제출 전 검토용이고, 실제 제출 형식과 관할 기관 요구사항은 최신 양식으로 확인해야 한다고 설명해줘.",
     "- 위험한 문구 3개와 대체 문구 3개를 마지막에 제시해줘.",
     "- 실제 발송 전 확인할 항목과 변호사 상담이 필요한 경우도 덧붙여줘."
   ].join("\n");
@@ -817,9 +1347,39 @@ function setMode(nextMode) {
   }
 }
 
-function setCaseType(nextCaseType) {
+function setCaseCategory(nextCategory = "all", options = {}) {
+  activeCaseCategory = nextCategory || "all";
+  const shouldSelectDefault = options.selectDefault === true;
+  const visibleCaseTypes = [];
+
+  caseCategoryButtons.forEach((item) => {
+    const isActive = item.dataset.caseCategory === activeCaseCategory;
+    item.classList.toggle("active", isActive);
+    item.setAttribute("aria-pressed", String(isActive));
+  });
+
+  caseTypeButtons.forEach((item) => {
+    const itemCategory = item.dataset.caseCategory || "all";
+    const isVisible = activeCaseCategory === "all" || itemCategory === activeCaseCategory;
+    item.hidden = !isVisible;
+    if (isVisible) visibleCaseTypes.push(item.dataset.caseType);
+  });
+
+  if (shouldSelectDefault && !visibleCaseTypes.includes(caseType)) {
+    setCaseType(CASE_CATEGORY_DEFAULTS[activeCaseCategory] || visibleCaseTypes[0] || "general", {
+      preserveCategory: true
+    });
+  }
+}
+
+function setCaseType(nextCaseType, options = {}) {
   caseType = nextCaseType;
   const config = CASE_TYPE_CONFIG[caseType] || CASE_TYPE_CONFIG.general;
+  const selectedButton = caseTypeButtons.find((item) => item.dataset.caseType === caseType);
+
+  if (!options.preserveCategory && selectedButton?.dataset.caseCategory && activeCaseCategory !== "all") {
+    setCaseCategory(selectedButton.dataset.caseCategory);
+  }
 
   caseTypeButtons.forEach((item) => {
     const isActive = item.dataset.caseType === caseType;

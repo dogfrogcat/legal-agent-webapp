@@ -33,6 +33,10 @@
         <button id="loginSubmitButton" class="primary" type="submit">로그인 / 회원가입</button>
         <button id="signupButton" class="ghost-button" type="button" hidden>회원가입</button>
         <span id="loginError" class="login-error" role="alert"></span>
+        <div class="legal-links">
+          <a href="/privacy.html" target="_blank" rel="noreferrer">개인정보처리방침</a>
+          <a href="/terms.html" target="_blank" rel="noreferrer">이용약관</a>
+        </div>
       </form>
     </section>
 
@@ -67,6 +71,8 @@
             <span class="switch" aria-hidden="true"></span>
             <span>Gemini 검토</span>
           </label>
+          <a class="ghost-button top-link" href="/privacy.html" target="_blank" rel="noreferrer">개인정보</a>
+          <a class="ghost-button top-link" href="/terms.html" target="_blank" rel="noreferrer">약관</a>
           <button id="logoutButton" class="ghost-button" type="button" hidden>로그아웃</button>
           <button id="clearButton" class="ghost-button" type="button">새 대화</button>
         </div>
@@ -84,37 +90,51 @@
           <strong>사건 유형</strong>
           <span id="caseStatusText">먼저 사건을 분류한 뒤 필요한 절차와 증거를 잡습니다.</span>
         </div>
-        <div class="case-row">
-          <span class="case-row-label">생활 사건</span>
-          <div class="case-nav">
-            <button class="case-type-button active" data-case-type="general" aria-pressed="true" type="button">일반</button>
-            <button class="case-type-button" data-case-type="unfairDismissal" aria-pressed="false" type="button">부당해고</button>
-            <button class="case-type-button" data-case-type="unpaidWages" aria-pressed="false" type="button">임금체불</button>
-            <button class="case-type-button" data-case-type="deposit" aria-pressed="false" type="button">전세·보증금</button>
-            <button class="case-type-button" data-case-type="consumer" aria-pressed="false" type="button">소비자 피해</button>
-            <button class="case-type-button" data-case-type="medicalBeauty" aria-pressed="false" type="button">의료·미용 피해</button>
-            <button class="case-type-button" data-case-type="contract" aria-pressed="false" type="button">계약 해지</button>
+        <div class="case-category-nav" aria-label="사건 유형 분류">
+          <button class="case-category-button active" data-case-category="all" aria-pressed="true" type="button">전체</button>
+          <button class="case-category-button" data-case-category="labor" aria-pressed="false" type="button">노동</button>
+          <button class="case-category-button" data-case-category="housing" aria-pressed="false" type="button">부동산</button>
+          <button class="case-category-button" data-case-category="consumer" aria-pressed="false" type="button">소비자·의료</button>
+          <button class="case-category-button" data-case-category="criminal" aria-pressed="false" type="button">형사</button>
+          <button class="case-category-button" data-case-category="document" aria-pressed="false" type="button">문서</button>
+        </div>
+        <div id="caseNav" class="case-nav case-nav-panel">
+          <button class="case-type-button active" data-case-category="all" data-case-type="general" aria-pressed="true" type="button">일반</button>
+          <button class="case-type-button" data-case-category="labor" data-case-type="unfairDismissal" aria-pressed="false" type="button">부당해고</button>
+          <button class="case-type-button" data-case-category="labor" data-case-type="unpaidWages" aria-pressed="false" type="button">임금체불</button>
+          <button class="case-type-button" data-case-category="housing" data-case-type="deposit" aria-pressed="false" type="button">전세·보증금</button>
+          <button class="case-type-button" data-case-category="consumer" data-case-type="consumer" aria-pressed="false" type="button">소비자 피해</button>
+          <button class="case-type-button" data-case-category="consumer" data-case-type="medicalBeauty" aria-pressed="false" type="button">의료·미용 피해</button>
+          <button class="case-type-button" data-case-category="document" data-case-type="contract" aria-pressed="false" type="button">계약 해지</button>
+          <button class="case-type-button" data-case-category="criminal" data-case-type="fraudProperty" aria-pressed="false" type="button">사기·재산범죄</button>
+          <button class="case-type-button" data-case-category="criminal" data-case-type="onlineFraud" aria-pressed="false" type="button">인터넷 사기</button>
+          <button class="case-type-button" data-case-category="criminal" data-case-type="voicePhishing" aria-pressed="false" type="button">보이스피싱</button>
+          <button class="case-type-button" data-case-category="criminal" data-case-type="assaultThreatInjury" aria-pressed="false" type="button">폭행·협박·상해</button>
+          <button class="case-type-button" data-case-category="criminal" data-case-type="defamationInsult" aria-pressed="false" type="button">명예훼손·모욕</button>
+          <button class="case-type-button" data-case-category="criminal" data-case-type="sexCrime" aria-pressed="false" type="button">성범죄</button>
+          <button class="case-type-button" data-case-category="criminal" data-case-type="stalkingDomestic" aria-pressed="false" type="button">스토킹·가정폭력</button>
+          <button class="case-type-button" data-case-category="criminal" data-case-type="duiTraffic" aria-pressed="false" type="button">음주운전·교통범죄</button>
+          <button class="case-type-button" data-case-category="criminal" data-case-type="drugs" aria-pressed="false" type="button">마약</button>
+          <button class="case-type-button" data-case-category="criminal" data-case-type="embezzlementBreach" aria-pressed="false" type="button">횡령·배임</button>
+          <button class="case-type-button" data-case-category="criminal" data-case-type="theftExtortionDamage" aria-pressed="false" type="button">절도·공갈·재물손괴</button>
+          <button class="case-type-button" data-case-category="criminal" data-case-type="criminalProcedure" aria-pressed="false" type="button">형사절차 대응</button>
+          <button class="case-type-button" data-case-category="document" data-case-type="complaintDrafting" aria-pressed="false" type="button">고소장 작성</button>
+          <button class="case-type-button" data-case-category="criminal" data-case-type="suspectInterview" aria-pressed="false" type="button">피의자 조사 대응</button>
+        </div>
+      </section>
+
+      <section id="caseFilePanel" class="case-file-panel" aria-label="사건 파일함">
+        <div class="case-file-head">
+          <div>
+            <strong>사건 파일함</strong>
+            <span id="caseFileStatus">현재 대화는 아직 저장 전입니다.</span>
+          </div>
+          <div class="case-file-actions">
+            <button id="newCaseButton" class="ghost-button" type="button">새 사건</button>
+            <button id="saveCaseButton" class="primary" type="button">현재 대화 저장</button>
           </div>
         </div>
-        <div class="case-row criminal-case-row">
-          <span class="case-row-label">형사 사건</span>
-          <div class="case-nav criminal-case-nav">
-            <button class="case-type-button" data-case-type="fraudProperty" aria-pressed="false" type="button">사기·재산범죄</button>
-            <button class="case-type-button" data-case-type="onlineFraud" aria-pressed="false" type="button">인터넷 사기</button>
-            <button class="case-type-button" data-case-type="voicePhishing" aria-pressed="false" type="button">보이스피싱</button>
-            <button class="case-type-button" data-case-type="assaultThreatInjury" aria-pressed="false" type="button">폭행·협박·상해</button>
-            <button class="case-type-button" data-case-type="defamationInsult" aria-pressed="false" type="button">명예훼손·모욕</button>
-            <button class="case-type-button" data-case-type="sexCrime" aria-pressed="false" type="button">성범죄</button>
-            <button class="case-type-button" data-case-type="stalkingDomestic" aria-pressed="false" type="button">스토킹·가정폭력</button>
-            <button class="case-type-button" data-case-type="duiTraffic" aria-pressed="false" type="button">음주운전·교통범죄</button>
-            <button class="case-type-button" data-case-type="drugs" aria-pressed="false" type="button">마약</button>
-            <button class="case-type-button" data-case-type="embezzlementBreach" aria-pressed="false" type="button">횡령·배임</button>
-            <button class="case-type-button" data-case-type="theftExtortionDamage" aria-pressed="false" type="button">절도·공갈·재물손괴</button>
-            <button class="case-type-button" data-case-type="criminalProcedure" aria-pressed="false" type="button">형사절차 대응</button>
-            <button class="case-type-button" data-case-type="complaintDrafting" aria-pressed="false" type="button">고소장 작성</button>
-            <button class="case-type-button" data-case-type="suspectInterview" aria-pressed="false" type="button">피의자 조사 대응</button>
-          </div>
-        </div>
+        <div id="caseList" class="case-list" aria-live="polite"></div>
       </section>
 
       <section class="workspace" aria-label="채팅">
@@ -127,11 +147,36 @@
           법률 정보 정리 보조용입니다. 소송 기한, 형사 사건, 큰 금전 손실이 걸린 사안은 변호사 상담을 권장합니다.
         </div>
 
+        <section id="quickStartPanel" class="quickstart-panel" aria-label="첫 질문 도우미">
+          <div class="quickstart-head">
+            <strong>무엇부터 정리할까요?</strong>
+            <span>상황에 가까운 버튼을 누르면 사건 유형과 질문 틀이 자동으로 잡힙니다.</span>
+          </div>
+          <div class="quickstart-grid">
+            <button class="quickstart-card" data-quickstart="damage" type="button">
+              <strong>피해를 입었어요</strong>
+              <span>손해배상, 합의선, 증거를 먼저 잡습니다.</span>
+            </button>
+            <button class="quickstart-card" data-quickstart="money" type="button">
+              <strong>돈을 못 받았어요</strong>
+              <span>임금, 보증금, 대여금 회수 절차를 정리합니다.</span>
+            </button>
+            <button class="quickstart-card" data-quickstart="criminal" type="button">
+              <strong>고소·형사 대응이 필요해요</strong>
+              <span>구성요건, 증거, 조사 대응을 나눠 봅니다.</span>
+            </button>
+            <button class="quickstart-card" data-quickstart="document" type="button">
+              <strong>문서를 만들고 싶어요</strong>
+              <span>내용증명, 고소장, 합의서 초안으로 이어집니다.</span>
+            </button>
+          </div>
+        </section>
+
         <section id="documentToolbox" class="document-toolbox" aria-label="문서 작성 도구" hidden>
           <div class="toolbox-head">
             <div>
-              <strong>내용증명 작성기</strong>
-              <span>사건 유형과 요구사항을 넣으면 우체국 발송 전 검토용 초안을 만듭니다.</span>
+              <strong>문서 작성기</strong>
+              <span>내용증명, 합의서, 고소장, 진정서, 신청서 초안을 검토용으로 만듭니다.</span>
             </div>
             <label>
               문서 강도
@@ -153,6 +198,12 @@
                 <option value="beauty">의료·미용 피해 손해배상 요구</option>
                 <option value="defamation">게시물 삭제·명예훼손 중단 요청</option>
                 <option value="loan">대여금 변제 요구</option>
+                <option value="settlement">합의서 위험문구 검토</option>
+                <option value="complaint">고소장 초안</option>
+                <option value="laborPetition">노동청 진정서</option>
+                <option value="consumerApplication">소비자원 피해구제 신청서</option>
+                <option value="paymentOrder">지급명령 신청 전 정리</option>
+                <option value="lawsuitFacts">소장용 사실관계 정리</option>
               </select>
             </label>
             <label>
@@ -187,7 +238,7 @@
 
           <div class="toolbox-actions">
             <button id="contentProofFillButton" class="ghost-button" type="button">입력창에 채우기</button>
-            <button id="contentProofDraftButton" class="primary" type="button">내용증명 초안 만들기</button>
+            <button id="contentProofDraftButton" class="primary" type="button">문서 초안 만들기</button>
           </div>
         </section>
 
