@@ -12,7 +12,42 @@
   --blue-soft: #e8f3ff;
   --yellow-soft: #fff6e0;
   --yellow-text: #6b4e16;
+  --focus-line: #b9dbff;
+  --danger: #e03131;
+  --toggle-off: #d1d6db;
+  --button-hover: #e5e8eb;
+  --source-line: #edf0f2;
+  --blue-soft-hover: #d9ebff;
+  --user-bubble: #333d4b;
+  --thinking-mid: #f8fbff;
+  --primary-contrast: #ffffff;
   --shadow: 0 16px 32px rgba(0, 27, 55, 0.08);
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --text: #f2f4f6;
+  --text-soft: #c9d1dc;
+  --text-muted: #8f9baa;
+  --line: #2d3440;
+  --surface: #101318;
+  --surface-raised: #171b22;
+  --layer: #242a34;
+  --blue: #5a9bff;
+  --blue-hover: #7db2ff;
+  --blue-soft: #152b46;
+  --yellow-soft: #2a2417;
+  --yellow-text: #ffd47a;
+  --focus-line: #3f83f8;
+  --danger: #ff6b6b;
+  --toggle-off: #5d6673;
+  --button-hover: #303744;
+  --source-line: #2b3340;
+  --blue-soft-hover: #1d3a5f;
+  --user-bubble: #2563eb;
+  --thinking-mid: #1b2430;
+  --primary-contrast: #ffffff;
+  --shadow: 0 16px 32px rgba(0, 0, 0, 0.28);
 }
 
 * {
@@ -83,8 +118,8 @@ button {
 }
 
 .login-card input:focus {
-  background: #fff;
-  border-color: #b9dbff;
+  background: var(--surface-raised);
+  border-color: var(--focus-line);
 }
 
 .privacy-consent {
@@ -93,7 +128,7 @@ button {
   gap: 10px;
   padding: 12px;
   color: var(--text);
-  background: #f9fafb;
+  background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 12px;
   cursor: pointer;
@@ -114,7 +149,7 @@ button {
 .privacy-consent input:focus {
   background: transparent;
   border-color: transparent;
-  outline: 2px solid #b9dbff;
+  outline: 2px solid var(--focus-line);
   outline-offset: 2px;
 }
 
@@ -162,7 +197,7 @@ button {
 
 .login-error {
   min-height: 20px;
-  color: #e03131;
+  color: var(--danger);
   font-size: 13px;
 }
 
@@ -287,7 +322,7 @@ button {
   place-items: center;
   width: 40px;
   height: 40px;
-  color: #fff;
+  color: var(--primary-contrast);
   background: var(--blue);
   border-radius: 12px;
   font-size: 20px;
@@ -345,7 +380,7 @@ h1 {
   position: relative;
   width: 34px;
   height: 20px;
-  background: #d1d6db;
+  background: var(--toggle-off);
   border-radius: 999px;
   transition: background 0.18s ease;
 }
@@ -357,7 +392,7 @@ h1 {
   width: 14px;
   height: 14px;
   content: "";
-  background: #fff;
+  background: var(--primary-contrast);
   border-radius: 999px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.16);
   transition: transform 0.18s ease;
@@ -387,7 +422,49 @@ h1 {
 }
 
 .ghost-button:hover {
-  background: #e5e8eb;
+  background: var(--button-hover);
+}
+
+.theme-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 40px;
+  padding: 4px;
+  background: var(--layer);
+  border-radius: 999px;
+}
+
+.theme-button {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  color: var(--text-muted);
+  background: transparent;
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.theme-button:hover {
+  color: var(--text);
+}
+
+.theme-button.active {
+  color: var(--blue);
+  background: var(--surface-raised);
+  box-shadow: 0 3px 8px rgba(0, 27, 55, 0.08);
+}
+
+.theme-button svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.9;
 }
 
 .mode-nav {
@@ -423,7 +500,7 @@ h1 {
 
 .mode-button.active {
   color: var(--text);
-  background: #fff;
+  background: var(--surface-raised);
   box-shadow: 0 4px 10px rgba(0, 27, 55, 0.08);
 }
 
@@ -480,7 +557,7 @@ h1 {
 
 .case-category-button.active {
   color: var(--text);
-  background: #fff;
+  background: var(--surface-raised);
   box-shadow: 0 4px 10px rgba(0, 27, 55, 0.08);
 }
 
@@ -508,7 +585,7 @@ h1 {
 .case-type-button.active {
   color: var(--blue);
   background: var(--blue-soft);
-  border-color: #b9dbff;
+  border-color: var(--focus-line);
 }
 
 .case-type-button:disabled {
@@ -710,7 +787,7 @@ h1 {
 
 .quickstart-card:hover {
   background: var(--blue-soft);
-  border-color: #b9dbff;
+  border-color: var(--focus-line);
 }
 
 .quickstart-card strong {
@@ -732,7 +809,7 @@ h1 {
   background: var(--surface-raised);
   border: 1px solid var(--line);
   border-radius: 16px;
-  box-shadow: 0 8px 18px rgba(0, 27, 55, 0.05);
+  box-shadow: var(--shadow);
 }
 
 .toolbox-head {
@@ -788,8 +865,8 @@ h1 {
 .document-toolbox input:focus,
 .document-toolbox select:focus,
 .document-toolbox textarea:focus {
-  background: #fff;
-  border-color: #b9dbff;
+  background: var(--surface-raised);
+  border-color: var(--focus-line);
 }
 
 .content-proof-grid {
@@ -840,8 +917,8 @@ h1 {
 
 .user .avatar {
   grid-column: 2;
-  color: #fff;
-  background: #333d4b;
+  color: var(--primary-contrast);
+  background: var(--user-bubble);
 }
 
 .bubble {
@@ -860,7 +937,7 @@ h1 {
   grid-column: 1;
   grid-row: 1;
   justify-self: end;
-  color: #fff;
+  color: var(--primary-contrast);
   background: var(--blue);
   box-shadow: 0 8px 16px rgba(49, 130, 246, 0.2);
 }
@@ -872,7 +949,7 @@ h1 {
 .thinking-bubble {
   min-width: min(100%, 420px);
   background:
-    linear-gradient(90deg, #fff 0%, #f8fbff 48%, #fff 100%),
+    linear-gradient(90deg, var(--surface-raised) 0%, var(--thinking-mid) 48%, var(--surface-raised) 100%),
     var(--surface-raised);
   background-size: 220% 100%;
   animation: thinkingSheen 2.4s ease-in-out infinite;
@@ -1020,7 +1097,7 @@ h1 {
 .sources {
   margin-top: 14px;
   padding-top: 12px;
-  border-top: 1px solid #edf0f2;
+  border-top: 1px solid var(--source-line);
 }
 
 .sources strong {
@@ -1045,7 +1122,7 @@ h1 {
 }
 
 .sources a:hover {
-  background: #d9ebff;
+  background: var(--blue-soft-hover);
 }
 
 .response-actions {
@@ -1054,7 +1131,7 @@ h1 {
   gap: 7px;
   margin-top: 14px;
   padding-top: 12px;
-  border-top: 1px solid #edf0f2;
+  border-top: 1px solid var(--source-line);
 }
 
 .response-action-button {
@@ -1133,7 +1210,7 @@ h1 {
   min-height: 30px;
   padding: 0 9px;
   color: var(--text-muted);
-  background: #fff;
+  background: var(--surface-raised);
   border: 1px solid var(--line);
   border-radius: 8px;
   cursor: pointer;
@@ -1182,7 +1259,7 @@ textarea::placeholder {
 }
 
 .icon-button:hover {
-  background: #d9ebff;
+  background: var(--blue-soft-hover);
 }
 
 .composer-note {
@@ -1195,7 +1272,7 @@ textarea::placeholder {
 .primary {
   min-width: 104px;
   padding: 0 18px;
-  color: #fff;
+  color: var(--primary-contrast);
   background: var(--blue);
 }
 

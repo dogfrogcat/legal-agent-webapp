@@ -24,6 +24,8 @@ const knowledgeBase = document.querySelector("#knowledgeBase");
 const webSearch = document.querySelector("#webSearch");
 const deepResearch = document.querySelector("#deepResearch");
 const geminiReview = document.querySelector("#geminiReview");
+const lightThemeButton = document.querySelector("#lightThemeButton");
+const darkThemeButton = document.querySelector("#darkThemeButton");
 const modeStatusTitle = document.querySelector("#modeStatusTitle");
 const modeStatusText = document.querySelector("#modeStatusText");
 const caseStatusText = document.querySelector("#caseStatusText");
@@ -308,6 +310,7 @@ const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
 const PRIVACY_ACCEPTED_KEY = "legalAgentPrivacyAccepted";
 const CASE_FILES_KEY = "legalAgentCaseFiles";
 const SIDEBAR_STATE_KEY = "legalAgentSidebarState";
+const THEME_KEY = "legalAgentTheme";
 
 const CASE_CATEGORY_DEFAULTS = {
   all: "general",
@@ -424,6 +427,7 @@ setMode(mode);
 setCaseCategory(activeCaseCategory);
 setCaseType(caseType);
 applyContentProofPreset();
+setTheme(loadTheme(), false);
 setSidebarCollapsed(loadSidebarCollapsed(), false);
 void initializeAuth();
 
@@ -438,6 +442,14 @@ signupButton.addEventListener("click", async () => {
 
 sidebarToggle.addEventListener("click", () => {
   setSidebarCollapsed(!appShell.classList.contains("sidebar-collapsed"));
+});
+
+lightThemeButton.addEventListener("click", () => {
+  setTheme("light");
+});
+
+darkThemeButton.addEventListener("click", () => {
+  setTheme("dark");
 });
 
 privacyConsent.addEventListener("change", () => {
@@ -839,6 +851,31 @@ function loadSidebarCollapsed() {
     return localStorage.getItem(SIDEBAR_STATE_KEY) === "collapsed";
   } catch {
     return false;
+  }
+}
+
+function loadTheme() {
+  try {
+    return localStorage.getItem(THEME_KEY) === "dark" ? "dark" : "light";
+  } catch {
+    return "light";
+  }
+}
+
+function setTheme(nextTheme, persist = true) {
+  const theme = nextTheme === "dark" ? "dark" : "light";
+  document.documentElement.dataset.theme = theme;
+  lightThemeButton.classList.toggle("active", theme === "light");
+  darkThemeButton.classList.toggle("active", theme === "dark");
+  lightThemeButton.setAttribute("aria-pressed", String(theme === "light"));
+  darkThemeButton.setAttribute("aria-pressed", String(theme === "dark"));
+
+  if (!persist) return;
+
+  try {
+    localStorage.setItem(THEME_KEY, theme);
+  } catch {
+    // 테마 저장 실패는 사용 흐름을 막지 않습니다.
   }
 }
 

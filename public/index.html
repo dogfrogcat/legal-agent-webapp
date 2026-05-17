@@ -4,6 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>한국법 법률 어시스턴트</title>
+    <script>
+      try {
+        document.documentElement.dataset.theme = localStorage.getItem("legalAgentTheme") === "dark" ? "dark" : "light";
+      } catch {
+        document.documentElement.dataset.theme = "light";
+      }
+    </script>
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
@@ -97,6 +104,26 @@
             <span class="switch" aria-hidden="true"></span>
             <span>Gemini 검토</span>
           </label>
+          <div class="theme-switch" role="group" aria-label="화면 테마">
+            <button id="lightThemeButton" class="theme-button active" type="button" aria-label="라이트 모드" aria-pressed="true" title="라이트 모드">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="4"></circle>
+                <path d="M12 3v2"></path>
+                <path d="M12 19v2"></path>
+                <path d="M4.22 4.22l1.42 1.42"></path>
+                <path d="M18.36 18.36l1.42 1.42"></path>
+                <path d="M3 12h2"></path>
+                <path d="M19 12h2"></path>
+                <path d="M4.22 19.78l1.42-1.42"></path>
+                <path d="M18.36 5.64l1.42-1.42"></path>
+              </svg>
+            </button>
+            <button id="darkThemeButton" class="theme-button" type="button" aria-label="다크 모드" aria-pressed="false" title="다크 모드">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M20 15.31A8 8 0 0 1 8.69 4 7 7 0 1 0 20 15.31z"></path>
+              </svg>
+            </button>
+          </div>
           <a class="ghost-button top-link" href="/privacy.html" target="_blank" rel="noreferrer">개인정보</a>
           <a class="ghost-button top-link" href="/terms.html" target="_blank" rel="noreferrer">약관</a>
           <button id="logoutButton" class="ghost-button" type="button" hidden>로그아웃</button>
