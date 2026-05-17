@@ -96,7 +96,16 @@ function safeEquals(left, right) {
 }
 
 function normalizeSupabaseUrl(value) {
-  return String(value || "").trim().replace(/\/+$/, "");
+  const rawValue = String(value || "").trim();
+  if (!rawValue) return "";
+
+  try {
+    const withProtocol = /^https?:\/\//i.test(rawValue) ? rawValue : `https://${rawValue}`;
+    const parsed = new URL(withProtocol);
+    return parsed.origin.replace(/\/+$/, "");
+  } catch {
+    return rawValue.replace(/\/(?:rest|auth)\/v1\/?$/i, "").replace(/\/+$/, "");
+  }
 }
 
 function getAuthMode() {
@@ -202,14 +211,23 @@ async function getAuthState(req) {
 }
 
 async function supabaseAuthFetch(path, options = {}) {
-  const response = await fetch(`${supabaseUrl}/auth/v1${path}`, {
-    ...options,
-    headers: {
-      apikey: supabaseAnonKey,
-      "Content-Type": "application/json",
-      ...(options.headers || {})
-    }
-  });
+  let response;
+  try {
+    response = await fetch(`${supabaseUrl}/auth/v1${path}`, {
+      ...options,
+      headers: {
+        apikey: supabaseAnonKey,
+        "Content-Type": "application/json",
+        ...(options.headers || {})
+      }
+    });
+  } catch {
+    const error = new Error(
+      "Supabase 연결에 실패했습니다. Render 환경변수 SUPABASE_URL은 https://프로젝트ID.supabase.co 형식이어야 하고, /rest/v1 또는 /auth/v1 경로는 빼야 합니다."
+    );
+    error.statusCode = 500;
+    throw error;
+  }
   const data = await readJsonResponse(response, "Supabase Auth");
 
   if (!response.ok) {
