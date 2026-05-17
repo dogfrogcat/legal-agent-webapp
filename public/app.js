@@ -650,9 +650,9 @@ function configureAuthForm() {
     privacyConsent.checked = true;
   }
   signupButton.hidden = true;
-  loginSubmitButton.textContent = usesEmail ? "계속하기" : "입장하기";
+  loginSubmitButton.textContent = usesEmail ? "로그인 / 회원가입" : "입장하기";
   loginDescription.textContent = usesEmail
-    ? "가입된 이메일이면 로그인하고, 처음 쓰는 이메일이면 자동으로 회원가입됩니다."
+    ? "이메일과 비밀번호를 입력하면 가입된 계정은 로그인되고, 처음 쓰는 이메일은 회원가입됩니다."
     : "공유 비밀번호를 입력하면 사용할 수 있습니다.";
   loginPassword.placeholder = usesEmail ? "비밀번호" : "공유 비밀번호";
   loginPassword.autocomplete = usesEmail ? "current-password" : "current-password";
@@ -664,7 +664,7 @@ function setAuthBusy(isBusy) {
   privacyConsent.disabled = isBusy || authMode !== "supabase";
   loginSubmitButton.disabled = isBusy;
   signupButton.disabled = isBusy;
-  loginSubmitButton.textContent = isBusy ? "확인 중" : authMode === "supabase" ? "계속하기" : "입장하기";
+  loginSubmitButton.textContent = isBusy ? "처리 중" : authMode === "supabase" ? "로그인 / 회원가입" : "입장하기";
 }
 
 function hasStoredPrivacyConsent() {
