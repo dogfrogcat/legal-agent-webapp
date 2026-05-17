@@ -41,6 +41,24 @@
     </section>
 
     <main id="appShell" class="app-shell" hidden>
+      <aside class="conversation-sidebar" aria-label="저장된 사건">
+        <section id="caseFilePanel" class="case-file-panel" aria-label="사건 파일함">
+          <div class="case-file-head">
+            <div>
+              <strong>사건 파일함</strong>
+              <span id="caseFileStatus">현재 대화는 아직 저장 전입니다.</span>
+            </div>
+          </div>
+          <div class="case-file-actions">
+            <button id="newCaseButton" class="ghost-button" type="button">새 사건</button>
+            <button id="saveCaseButton" class="primary" type="button">현재 대화 저장</button>
+          </div>
+          <div id="caseList" class="case-list" aria-live="polite"></div>
+        </section>
+      </aside>
+
+      <div class="app-main">
+        <div class="app-main-inner">
       <header class="topbar">
         <div class="brand">
           <div class="mark" aria-hidden="true">L</div>
@@ -123,25 +141,7 @@
         </div>
       </section>
 
-      <div class="app-body">
-        <aside class="case-sidebar" aria-label="사건 파일">
-          <section id="caseFilePanel" class="case-file-panel" aria-label="사건 파일함">
-            <div class="side-tab" aria-hidden="true">사건</div>
-            <div class="case-file-head">
-              <div>
-                <strong>사건 파일함</strong>
-                <span id="caseFileStatus">현재 대화는 아직 저장 전입니다.</span>
-              </div>
-              <div class="case-file-actions">
-                <button id="newCaseButton" class="ghost-button" type="button">새 사건</button>
-                <button id="saveCaseButton" class="primary" type="button">현재 대화 저장</button>
-              </div>
-            </div>
-            <div id="caseList" class="case-list" aria-live="polite"></div>
-          </section>
-        </aside>
-
-        <section class="workspace" aria-label="채팅">
+      <section class="workspace" aria-label="채팅">
         <div id="modeStatus" class="mode-status">
           <strong id="modeStatusTitle">쟁점 정리</strong>
           <span id="modeStatusText">사실관계, 핵심 쟁점, 유불리, 다음 절차를 한 번에 정리합니다.</span>
@@ -271,7 +271,8 @@
             <button id="sendButton" class="primary" type="submit">분석하기</button>
           </div>
         </form>
-        </section>
+      </section>
+        </div>
       </div>
     </main>
 
