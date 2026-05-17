@@ -187,9 +187,9 @@ button {
 
 .app-shell {
   display: grid;
-  grid-template-rows: auto auto auto auto minmax(0, 1fr);
+  grid-template-rows: auto auto auto minmax(0, 1fr);
   min-height: 100vh;
-  max-width: 1120px;
+  max-width: 1280px;
   margin: 0 auto;
   padding: 0 24px;
 }
@@ -442,20 +442,49 @@ h1 {
   opacity: 0.62;
 }
 
+.app-body {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  gap: 20px;
+  min-width: 0;
+  min-height: 0;
+  padding-top: 16px;
+}
+
+.case-sidebar {
+  min-width: 0;
+}
+
 .case-file-panel {
+  position: sticky;
+  top: 16px;
   display: grid;
   gap: 12px;
-  margin-top: 12px;
+  align-self: start;
+  max-height: calc(100vh - 32px);
   padding: 14px;
   background: var(--surface-raised);
   border: 1px solid var(--line);
   border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 27, 55, 0.05);
+  overflow: hidden;
+}
+
+.side-tab {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  min-height: 28px;
+  padding: 0 10px;
+  color: var(--blue);
+  background: var(--blue-soft);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 900;
 }
 
 .case-file-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
+  display: grid;
   gap: 12px;
 }
 
@@ -475,20 +504,27 @@ h1 {
 }
 
 .case-file-actions {
-  display: flex;
+  display: grid;
   gap: 8px;
+}
+
+.case-file-actions .ghost-button,
+.case-file-actions .primary {
+  width: 100%;
 }
 
 .case-list {
-  display: flex;
+  display: grid;
   gap: 8px;
-  overflow-x: auto;
-  padding-bottom: 2px;
-  scrollbar-width: none;
+  overflow-y: auto;
+  min-height: 80px;
+  max-height: min(460px, calc(100vh - 246px));
+  padding-right: 2px;
+  scrollbar-width: thin;
 }
 
 .case-list::-webkit-scrollbar {
-  display: none;
+  width: 6px;
 }
 
 .case-list:empty::before {
@@ -498,9 +534,9 @@ h1 {
 }
 
 .case-file-item {
-  flex: 0 0 220px;
   display: grid;
   gap: 4px;
+  width: 100%;
   padding: 12px;
   text-align: left;
   color: var(--text);
@@ -532,7 +568,7 @@ h1 {
   grid-template-rows: auto auto auto minmax(0, 1fr) auto;
   min-width: 0;
   min-height: 0;
-  padding: 18px 0 24px;
+  padding: 0 0 24px;
 }
 
 .mode-status {
@@ -1172,6 +1208,17 @@ textarea::placeholder {
   text-decoration: none;
 }
 
+@media (max-width: 1080px) {
+  .app-body {
+    grid-template-columns: 240px minmax(0, 1fr);
+    gap: 16px;
+  }
+
+  .quickstart-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 880px) {
   .app-shell {
     padding: 0 16px;
@@ -1212,15 +1259,36 @@ textarea::placeholder {
     text-align: left;
   }
 
-  .case-file-head,
-  .case-file-actions {
-    flex-direction: column;
+  .app-body {
+    grid-template-columns: 1fr;
+    gap: 14px;
   }
 
-  .case-file-actions,
-  .case-file-actions .primary,
-  .case-file-actions .ghost-button {
-    width: 100%;
+  .case-file-panel {
+    position: static;
+    max-height: none;
+  }
+
+  .case-file-head {
+    grid-template-columns: 1fr;
+  }
+
+  .case-list {
+    display: flex;
+    max-height: none;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-right: 0;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+  }
+
+  .case-list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .case-file-item {
+    flex: 0 0 220px;
   }
 
   .quickstart-grid {
