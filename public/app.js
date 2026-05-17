@@ -5,6 +5,9 @@ const loginEmail = document.querySelector("#loginEmail");
 const loginPassword = document.querySelector("#loginPassword");
 const loginSubmitButton = document.querySelector("#loginSubmitButton");
 const signupButton = document.querySelector("#signupButton");
+const privacyConsentWrap = document.querySelector("#privacyConsentWrap");
+const privacyConsent = document.querySelector("#privacyConsent");
+const privacyDetails = document.querySelector("#privacyDetails");
 const loginError = document.querySelector("#loginError");
 const appShell = document.querySelector("#appShell");
 const chat = document.querySelector("#chat");
@@ -253,6 +256,7 @@ let authMode = "none";
 let currentUser = null;
 const MAX_IMAGES = 4;
 const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
+const PRIVACY_ACCEPTED_KEY = "legalAgentPrivacyAccepted";
 
 modeButtons.forEach((button) => {
   button.addEventListener("click", () => {
@@ -278,6 +282,12 @@ loginForm.addEventListener("submit", async (event) => {
 
 signupButton.addEventListener("click", async () => {
   await submitAuth();
+});
+
+privacyConsent.addEventListener("change", () => {
+  if (privacyConsent.checked && loginError.textContent === "개인정보 처리 안내 확인이 필요합니다.") {
+    loginError.textContent = "";
+  }
 });
 
 contentProofType.addEventListener("change", () => {
@@ -582,6 +592,13 @@ async function initializeAuth() {
 
 async function submitAuth() {
   loginError.textContent = "";
+
+  if (authMode === "supabase" && !privacyConsent.checked) {
+    loginError.textContent = "개인정보 처리 안내 확인이 필요합니다.";
+    privacyConsent.focus();
+    return;
+  }
+
   setAuthBusy(true);
 
   try {
@@ -600,6 +617,7 @@ async function submitAuth() {
     }
 
     currentUser = data.user || null;
+    storePrivacyConsent();
     loginPassword.value = "";
     showApp();
   } catch (error) {
@@ -614,7 +632,8 @@ function getAuthPayload() {
   if (authMode === "supabase") {
     return {
       email: loginEmail.value.trim(),
-      password: loginPassword.value
+      password: loginPassword.value,
+      privacyAccepted: privacyConsent.checked
     };
   }
 
@@ -624,6 +643,12 @@ function getAuthPayload() {
 function configureAuthForm() {
   const usesEmail = authMode === "supabase";
   loginEmail.hidden = !usesEmail;
+  privacyConsentWrap.hidden = !usesEmail;
+  privacyDetails.hidden = !usesEmail;
+  privacyConsent.disabled = !usesEmail;
+  if (usesEmail && hasStoredPrivacyConsent()) {
+    privacyConsent.checked = true;
+  }
   signupButton.hidden = true;
   loginSubmitButton.textContent = usesEmail ? "계속하기" : "입장하기";
   loginDescription.textContent = usesEmail
@@ -636,9 +661,28 @@ function configureAuthForm() {
 function setAuthBusy(isBusy) {
   loginEmail.disabled = isBusy;
   loginPassword.disabled = isBusy;
+  privacyConsent.disabled = isBusy || authMode !== "supabase";
   loginSubmitButton.disabled = isBusy;
   signupButton.disabled = isBusy;
   loginSubmitButton.textContent = isBusy ? "확인 중" : authMode === "supabase" ? "계속하기" : "입장하기";
+}
+
+function hasStoredPrivacyConsent() {
+  try {
+    return localStorage.getItem(PRIVACY_ACCEPTED_KEY) === "true";
+  } catch {
+    return false;
+  }
+}
+
+function storePrivacyConsent() {
+  if (authMode !== "supabase" || !privacyConsent.checked) return;
+
+  try {
+    localStorage.setItem(PRIVACY_ACCEPTED_KEY, "true");
+  } catch {
+    // Local storage can be disabled in private browsing modes.
+  }
 }
 
 function getAuthFocusTarget() {

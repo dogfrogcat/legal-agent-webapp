@@ -971,6 +971,10 @@ async function handleLogin(req, res) {
       sendJson(res, 400, { error: "이메일과 비밀번호를 입력해주세요." });
       return;
     }
+    if (!hasAcceptedPrivacyNotice(payload)) {
+      sendJson(res, 400, { error: "개인정보 처리 안내 확인이 필요합니다." });
+      return;
+    }
 
     try {
       const session = await loginSupabase(email, password);
@@ -1024,6 +1028,10 @@ async function handleAuthContinue(req, res) {
   const password = String(payload.password || "");
   if (!email || !password) {
     sendJson(res, 400, { error: "이메일과 비밀번호를 입력해주세요." });
+    return;
+  }
+  if (!hasAcceptedPrivacyNotice(payload)) {
+    sendJson(res, 400, { error: "개인정보 처리 안내 확인이 필요합니다." });
     return;
   }
 
@@ -1091,6 +1099,10 @@ function isAlreadyRegisteredError(error) {
   return /이미 가입|already|registered/i.test(error?.message || "");
 }
 
+function hasAcceptedPrivacyNotice(payload) {
+  return payload?.privacyAccepted === true || String(payload?.privacyAccepted || "").toLowerCase() === "true";
+}
+
 async function handleSignup(req, res) {
   if (getAuthMode() !== "supabase") {
     sendJson(res, 400, {
@@ -1111,6 +1123,10 @@ async function handleSignup(req, res) {
   const password = String(payload.password || "");
   if (!email || !password) {
     sendJson(res, 400, { error: "이메일과 비밀번호를 입력해주세요." });
+    return;
+  }
+  if (!hasAcceptedPrivacyNotice(payload)) {
+    sendJson(res, 400, { error: "개인정보 처리 안내 확인이 필요합니다." });
     return;
   }
 

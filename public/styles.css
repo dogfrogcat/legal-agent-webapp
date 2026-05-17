@@ -87,6 +87,75 @@ button {
   border-color: #b9dbff;
 }
 
+.privacy-consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px;
+  color: var(--text);
+  background: #f9fafb;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.privacy-consent input {
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+  min-height: 18px;
+  margin: 2px 0 0;
+  padding: 0;
+  accent-color: var(--blue);
+  background: transparent;
+  border: 0;
+}
+
+.privacy-consent input:focus {
+  background: transparent;
+  border-color: transparent;
+  outline: 2px solid #b9dbff;
+  outline-offset: 2px;
+}
+
+.privacy-consent span {
+  display: grid;
+  gap: 4px;
+}
+
+.privacy-consent strong {
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.privacy-consent small {
+  color: var(--text-soft);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.privacy-details {
+  padding: 0 2px;
+  color: var(--text-soft);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.privacy-details summary {
+  color: var(--blue);
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.privacy-details ul {
+  margin: 8px 0 0;
+  padding-left: 18px;
+}
+
+.privacy-details li + li {
+  margin-top: 4px;
+}
+
 .login-card .primary {
   width: 100%;
 }

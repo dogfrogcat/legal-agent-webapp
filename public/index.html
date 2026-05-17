@@ -14,6 +14,22 @@
         <p id="loginDescription">가입된 이메일이면 로그인하고, 처음 쓰는 이메일이면 자동으로 회원가입됩니다.</p>
         <input id="loginEmail" type="email" autocomplete="email" placeholder="이메일" hidden />
         <input id="loginPassword" type="password" autocomplete="current-password" placeholder="비밀번호" />
+        <label id="privacyConsentWrap" class="privacy-consent" hidden>
+          <input id="privacyConsent" type="checkbox" />
+          <span>
+            <strong>개인정보 처리 안내를 확인했습니다.</strong>
+            <small>질문·문서·이미지에 민감정보가 들어갈 수 있으니 주민등록번호, 계좌번호, 주소, 연락처는 가능한 가려서 입력해주세요.</small>
+          </span>
+        </label>
+        <details id="privacyDetails" class="privacy-details" hidden>
+          <summary>개인정보 처리 안내 보기</summary>
+          <ul>
+            <li>계정 로그인에는 이메일과 인증 세션 정보가 사용됩니다.</li>
+            <li>입력한 질문, 문서, 첨부 이미지는 답변 생성을 위해 AI API와 검색 처리에 사용될 수 있습니다.</li>
+            <li>이 앱은 별도 상담 DB 저장 기능을 두지 않았지만, 인증·서버·API 제공자의 처리 기록은 남을 수 있습니다.</li>
+            <li>실제 공개 서비스 운영 전에는 정식 개인정보처리방침과 이용약관을 별도로 마련해야 합니다.</li>
+          </ul>
+        </details>
         <button id="loginSubmitButton" class="primary" type="submit">계속하기</button>
         <button id="signupButton" class="ghost-button" type="button" hidden>회원가입</button>
         <span id="loginError" class="login-error" role="alert"></span>
