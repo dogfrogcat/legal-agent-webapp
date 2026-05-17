@@ -25,6 +25,18 @@ const modeStatusText = document.querySelector("#modeStatusText");
 const caseStatusText = document.querySelector("#caseStatusText");
 const modeButtons = Array.from(document.querySelectorAll(".mode-button"));
 const caseTypeButtons = Array.from(document.querySelectorAll(".case-type-button"));
+const documentToolbox = document.querySelector("#documentToolbox");
+const contentProofType = document.querySelector("#contentProofType");
+const contentProofTone = document.querySelector("#contentProofTone");
+const contentProofSender = document.querySelector("#contentProofSender");
+const contentProofRecipient = document.querySelector("#contentProofRecipient");
+const contentProofAmount = document.querySelector("#contentProofAmount");
+const contentProofDeadline = document.querySelector("#contentProofDeadline");
+const contentProofDemand = document.querySelector("#contentProofDemand");
+const contentProofFacts = document.querySelector("#contentProofFacts");
+const contentProofEvidence = document.querySelector("#contentProofEvidence");
+const contentProofFillButton = document.querySelector("#contentProofFillButton");
+const contentProofDraftButton = document.querySelector("#contentProofDraftButton");
 
 const MODE_CONFIG = {
   dispute: {
@@ -65,6 +77,7 @@ const SOURCE_FALLBACK_TITLES = [
   { host: "moleg.go.kr", title: "법제처" },
   { host: "kca.go.kr", title: "한국소비자원" },
   { host: "consumer.go.kr", title: "소비자24" },
+  { host: "epost.go.kr", title: "인터넷우체국" },
   { host: "klri.re.kr", title: "한국법제연구원" },
   { host: "moel.go.kr", title: "고용노동부" },
   { host: "nlrc.go.kr", title: "중앙노동위원회" },
@@ -186,6 +199,51 @@ const CASE_TYPE_CONFIG = {
   }
 };
 
+const CONTENT_PROOF_CONFIG = {
+  refund: {
+    title: "계약 해지·환불 요구",
+    caseType: "consumer",
+    demand: "계약 해지 및 결제대금 환불",
+    factsHint: "계약일, 결제금액, 환불 요청일, 업체 답변, 약관/광고 문구를 시간순으로 적어주세요."
+  },
+  wage: {
+    title: "임금체불 지급 요구",
+    caseType: "unpaidWages",
+    demand: "미지급 임금 및 퇴직금 지급",
+    factsHint: "근무기간, 임금 약정, 미지급 기간·금액, 퇴사일, 사업주 답변을 적어주세요."
+  },
+  deposit: {
+    title: "전세·보증금 반환 요구",
+    caseType: "deposit",
+    demand: "임대차보증금 반환",
+    factsHint: "계약기간, 계약 종료 통지일, 보증금, 전입신고·확정일자, 반환 거절 사유를 적어주세요."
+  },
+  beauty: {
+    title: "의료·미용 피해 손해배상 요구",
+    caseType: "medicalBeauty",
+    demand: "치료비 및 손해배상 협의",
+    factsHint: "시술일, 사전 고지 내용, 악화 시점, 진단서 내용, 업체 답변, 사진 타임라인을 적어주세요."
+  },
+  defamation: {
+    title: "게시물 삭제·명예훼손 중단 요청",
+    caseType: "defamationInsult",
+    demand: "게시물 삭제, 재게시 중단, 사과 또는 정정",
+    factsHint: "게시일, 플랫폼/URL, 표현 내용, 특정성, 허위 여부, 삭제 요청 기록을 적어주세요."
+  },
+  loan: {
+    title: "대여금 변제 요구",
+    caseType: "general",
+    demand: "대여금 변제",
+    factsHint: "빌려준 날짜, 금액, 변제기, 송금내역, 일부 변제, 상대방의 변제 약속을 적어주세요."
+  }
+};
+
+const CONTENT_PROOF_TONE_LABELS = {
+  soft: "부드러운 합의 요청",
+  balanced: "단호하지만 협상 가능",
+  final: "소송 전 최종 통지"
+};
+
 let mode = "dispute";
 let caseType = "general";
 let history = [];
@@ -210,6 +268,7 @@ caseTypeButtons.forEach((button) => {
 
 setMode(mode);
 setCaseType(caseType);
+applyContentProofPreset();
 void initializeAuth();
 
 loginForm.addEventListener("submit", async (event) => {
@@ -219,6 +278,19 @@ loginForm.addEventListener("submit", async (event) => {
 
 signupButton.addEventListener("click", async () => {
   await submitAuth("signup");
+});
+
+contentProofType.addEventListener("change", () => {
+  applyContentProofPreset();
+});
+
+contentProofFillButton.addEventListener("click", () => {
+  fillContentProofPrompt();
+});
+
+contentProofDraftButton.addEventListener("click", () => {
+  fillContentProofPrompt();
+  form.requestSubmit();
 });
 
 logoutButton.addEventListener("click", async () => {
@@ -414,6 +486,11 @@ function setBusy(isBusy) {
   logoutButton.disabled = isBusy;
   input.disabled = isBusy;
   attachButton.disabled = isBusy;
+  contentProofFillButton.disabled = isBusy;
+  contentProofDraftButton.disabled = isBusy;
+  documentToolbox.querySelectorAll("input, select, textarea").forEach((field) => {
+    field.disabled = isBusy;
+  });
   caseTypeButtons.forEach((button) => {
     button.disabled = isBusy;
   });
@@ -565,6 +642,55 @@ function clearAttachments() {
   renderAttachments();
 }
 
+function applyContentProofPreset() {
+  const config = CONTENT_PROOF_CONFIG[contentProofType.value] || CONTENT_PROOF_CONFIG.refund;
+  contentProofDemand.value = config.demand;
+  contentProofFacts.placeholder = config.factsHint;
+}
+
+function fillContentProofPrompt() {
+  const config = CONTENT_PROOF_CONFIG[contentProofType.value] || CONTENT_PROOF_CONFIG.refund;
+  const targetCaseType = config.caseType || "general";
+
+  setMode("drafting");
+  setCaseType(targetCaseType);
+  input.value = buildContentProofPrompt(config);
+  input.focus();
+}
+
+function buildContentProofPrompt(config) {
+  const valueOrBlank = (value) => String(value || "").trim() || "[확인 필요]";
+  const toneLabel = CONTENT_PROOF_TONE_LABELS[contentProofTone.value] || CONTENT_PROOF_TONE_LABELS.balanced;
+
+  return [
+    "내용증명 검토용 초안을 작성해줘.",
+    "",
+    "문서 작성 조건:",
+    `- 문서 유형: ${config.title}`,
+    `- 문서 강도: ${toneLabel}`,
+    `- 발신인: ${valueOrBlank(contentProofSender.value)}`,
+    `- 수신인: ${valueOrBlank(contentProofRecipient.value)}`,
+    `- 요구 금액: ${valueOrBlank(contentProofAmount.value)}`,
+    `- 답변 기한: ${valueOrBlank(contentProofDeadline.value)}`,
+    `- 핵심 요구: ${valueOrBlank(contentProofDemand.value)}`,
+    "",
+    "사실관계:",
+    valueOrBlank(contentProofFacts.value),
+    "",
+    "첨부 또는 보유 증거:",
+    valueOrBlank(contentProofEvidence.value),
+    "",
+    "작성 방식:",
+    "- 첫 줄에 '검토용 초안'이라고 표시해줘.",
+    "- 제목, 발신인, 수신인, 통지 취지, 사실관계, 요구사항, 답변기한, 미이행 시 조치, 첨부자료, 발송 전 체크리스트 순서로 작성해줘.",
+    "- 비난·협박·모욕 표현은 빼고, 기관이나 법원이 읽어도 차분한 문장으로 써줘.",
+    "- 빈 정보는 임의로 만들지 말고 [확인 필요]로 남겨줘.",
+    "- 내용증명은 권리를 확정하는 문서가 아니라 발송한 내용과 시점을 증명하는 수단이라는 한계를 짧게 설명해줘.",
+    "- 위험한 문구 3개와 대체 문구 3개를 마지막에 제시해줘.",
+    "- 실제 발송 전 확인할 항목과 변호사 상담이 필요한 경우도 덧붙여줘."
+  ].join("\n");
+}
+
 function setMode(nextMode) {
   mode = nextMode;
   const config = MODE_CONFIG[mode] || MODE_CONFIG.qa;
@@ -577,6 +703,7 @@ function setMode(nextMode) {
 
   modeStatusTitle.textContent = config.title;
   modeStatusText.textContent = config.status;
+  documentToolbox.hidden = mode !== "drafting";
   updateInputPlaceholder();
   if (!sendButton.disabled) {
     sendButton.textContent = config.submitLabel;
