@@ -10,6 +10,7 @@ const privacyConsent = document.querySelector("#privacyConsent");
 const privacyDetails = document.querySelector("#privacyDetails");
 const loginError = document.querySelector("#loginError");
 const appShell = document.querySelector("#appShell");
+const sidebarToggle = document.querySelector("#sidebarToggle");
 const chat = document.querySelector("#chat");
 const form = document.querySelector("#chatForm");
 const input = document.querySelector("#messageInput");
@@ -306,6 +307,7 @@ const MAX_IMAGES = 4;
 const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
 const PRIVACY_ACCEPTED_KEY = "legalAgentPrivacyAccepted";
 const CASE_FILES_KEY = "legalAgentCaseFiles";
+const SIDEBAR_STATE_KEY = "legalAgentSidebarState";
 
 const CASE_CATEGORY_DEFAULTS = {
   all: "general",
@@ -421,6 +423,7 @@ setMode(mode);
 setCaseCategory(activeCaseCategory);
 setCaseType(caseType);
 applyContentProofPreset();
+setSidebarCollapsed(loadSidebarCollapsed(), false);
 void initializeAuth();
 
 loginForm.addEventListener("submit", async (event) => {
@@ -430,6 +433,10 @@ loginForm.addEventListener("submit", async (event) => {
 
 signupButton.addEventListener("click", async () => {
   await submitAuth();
+});
+
+sidebarToggle.addEventListener("click", () => {
+  setSidebarCollapsed(!appShell.classList.contains("sidebar-collapsed"));
 });
 
 privacyConsent.addEventListener("change", () => {
@@ -820,6 +827,29 @@ function setBusy(isBusy) {
   deepResearch.disabled = isBusy;
   geminiReview.disabled = isBusy;
   sendButton.textContent = isBusy ? "분석 중" : MODE_CONFIG[mode].submitLabel;
+}
+
+function loadSidebarCollapsed() {
+  try {
+    return localStorage.getItem(SIDEBAR_STATE_KEY) === "collapsed";
+  } catch {
+    return false;
+  }
+}
+
+function setSidebarCollapsed(isCollapsed, persist = true) {
+  appShell.classList.toggle("sidebar-collapsed", isCollapsed);
+  sidebarToggle.setAttribute("aria-expanded", String(!isCollapsed));
+  sidebarToggle.setAttribute("aria-label", isCollapsed ? "사이드바 열기" : "사이드바 닫기");
+  sidebarToggle.title = isCollapsed ? "사이드바 열기" : "사이드바 닫기";
+
+  if (!persist) return;
+
+  try {
+    localStorage.setItem(SIDEBAR_STATE_KEY, isCollapsed ? "collapsed" : "open");
+  } catch {
+    // 사이드바 상태 저장 실패는 사용 흐름을 막지 않습니다.
+  }
 }
 
 async function initializeAuth() {
