@@ -1005,6 +1005,92 @@ async function handleLogin(req, res) {
   );
 }
 
+async function handleAuthContinue(req, res) {
+  const authMode = getAuthMode();
+  if (authMode !== "supabase") {
+    await handleLogin(req, res);
+    return;
+  }
+
+  let payload;
+  try {
+    payload = JSON.parse(await readRequestBody(req));
+  } catch {
+    sendJson(res, 400, { error: "인증 요청 형식이 올바르지 않습니다." });
+    return;
+  }
+
+  const email = String(payload.email || "").trim().toLowerCase();
+  const password = String(payload.password || "");
+  if (!email || !password) {
+    sendJson(res, 400, { error: "이메일과 비밀번호를 입력해주세요." });
+    return;
+  }
+
+  try {
+    const session = await loginSupabase(email, password);
+    sendJson(
+      res,
+      200,
+      {
+        ok: true,
+        authRequired: true,
+        authMode,
+        authenticated: true,
+        authAction: "login",
+        message: "로그인되었습니다.",
+        user: session.user ? { id: session.user.id, email: session.user.email } : { email }
+      },
+      { "Set-Cookie": buildSupabaseAuthCookies(session) }
+    );
+    return;
+  } catch (loginError) {
+    if (!isInvalidLoginError(loginError)) {
+      sendJson(res, loginError.statusCode || 401, { error: loginError.message });
+      return;
+    }
+  }
+
+  try {
+    const result = await signupSupabase(email, password);
+    const hasSession = Boolean(result.access_token && result.refresh_token);
+    sendJson(
+      res,
+      200,
+      {
+        ok: true,
+        authRequired: true,
+        authMode,
+        authenticated: hasSession,
+        authAction: "signup",
+        needsEmailConfirmation: !hasSession,
+        message: hasSession
+          ? "회원가입이 완료되었습니다."
+          : "회원가입 확인 메일을 보냈습니다. 이메일 인증 후 로그인해주세요.",
+        user: result.user ? { id: result.user.id, email: result.user.email } : { email }
+      },
+      hasSession ? { "Set-Cookie": buildSupabaseAuthCookies(result) } : {}
+    );
+  } catch (signupError) {
+    if (isAlreadyRegisteredError(signupError)) {
+      sendJson(res, 401, {
+        error: "이미 가입된 이메일입니다. 비밀번호를 확인한 뒤 다시 시도해주세요."
+      });
+      return;
+    }
+
+    sendJson(res, signupError.statusCode || 400, { error: signupError.message });
+  }
+}
+
+function isInvalidLoginError(error) {
+  return error?.statusCode === 400 && /이메일 또는 비밀번호|invalid login|credentials/i.test(error.message || "");
+}
+
+function isAlreadyRegisteredError(error) {
+  return /이미 가입|already|registered/i.test(error?.message || "");
+}
+
 async function handleSignup(req, res) {
   if (getAuthMode() !== "supabase") {
     sendJson(res, 400, {
@@ -1119,6 +1205,11 @@ const server = http.createServer((req, res) => {
 
   if (req.method === "POST" && req.url === "/api/login") {
     void handleLogin(req, res);
+    return;
+  }
+
+  if (req.method === "POST" && req.url === "/api/auth/continue") {
+    void handleAuthContinue(req, res);
     return;
   }
 

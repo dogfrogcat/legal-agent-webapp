@@ -273,11 +273,11 @@ void initializeAuth();
 
 loginForm.addEventListener("submit", async (event) => {
   event.preventDefault();
-  await submitAuth("login");
+  await submitAuth();
 });
 
 signupButton.addEventListener("click", async () => {
-  await submitAuth("signup");
+  await submitAuth();
 });
 
 contentProofType.addEventListener("change", () => {
@@ -377,7 +377,9 @@ form.addEventListener("submit", async (event) => {
       ? "심층 검토 중입니다. 내부 플레이북과 공식 출처를 함께 보면서 쟁점과 가능성을 더 촘촘히 따져보고 있어요."
       : geminiReview.checked
       ? "분석 중입니다. OpenAI 답변을 만든 뒤 Gemini로 한 번 더 검토하고 있어요."
-      : MODE_CONFIG[mode].loading
+      : MODE_CONFIG[mode].loading,
+    pending: true,
+    pendingSteps: buildPendingSteps()
   });
 
   try {
@@ -427,9 +429,10 @@ form.addEventListener("submit", async (event) => {
   }
 });
 
-function addMessage({ role, text, citations = [], images = [] }) {
+function addMessage({ role, text, citations = [], images = [], pending = false, pendingSteps = [] }) {
   const article = document.createElement("article");
   article.className = `message ${role}`;
+  if (pending) article.classList.add("pending");
 
   const avatar = document.createElement("div");
   avatar.className = "avatar";
@@ -437,7 +440,10 @@ function addMessage({ role, text, citations = [], images = [] }) {
 
   const bubble = document.createElement("div");
   bubble.className = "bubble";
-  if (role === "assistant") {
+  if (pending) {
+    bubble.classList.add("thinking-bubble");
+    renderThinkingBubble(bubble, text, pendingSteps);
+  } else if (role === "assistant") {
     renderRichText(bubble, text);
   } else {
     bubble.textContent = text;
@@ -478,6 +484,59 @@ function addMessage({ role, text, citations = [], images = [] }) {
   chat.append(article);
   chat.scrollTop = chat.scrollHeight;
   return article;
+}
+
+function buildPendingSteps() {
+  if (deepResearch.checked) {
+    return ["사실관계 정리", "공식 근거 검색", "전략 범위 계산"];
+  }
+
+  if (geminiReview.checked) {
+    return ["1차 답변 작성", "Gemini 교차검증", "최종 정리"];
+  }
+
+  if (mode === "drafting") {
+    return ["사실관계 정리", "위험 문구 점검", "문서 초안 구성"];
+  }
+
+  if (mode === "precedent") {
+    return ["쟁점 추출", "근거 후보 확인", "판단 요지 정리"];
+  }
+
+  return ["사실관계 정리", "플레이북 확인", "답변 구성"];
+}
+
+function renderThinkingBubble(container, text, steps = []) {
+  container.textContent = "";
+
+  const status = document.createElement("div");
+  status.className = "thinking-status";
+
+  const orb = document.createElement("span");
+  orb.className = "thinking-orb";
+  orb.setAttribute("aria-hidden", "true");
+
+  const label = document.createElement("span");
+  label.textContent = text;
+
+  const dots = document.createElement("span");
+  dots.className = "thinking-dots";
+  dots.setAttribute("aria-hidden", "true");
+  dots.append(document.createElement("i"), document.createElement("i"), document.createElement("i"));
+
+  status.append(orb, label, dots);
+  container.append(status);
+
+  if (steps.length) {
+    const stepList = document.createElement("div");
+    stepList.className = "thinking-steps";
+    steps.forEach((step) => {
+      const item = document.createElement("span");
+      item.textContent = step;
+      stepList.append(item);
+    });
+    container.append(stepList);
+  }
 }
 
 function setBusy(isBusy) {
@@ -521,12 +580,12 @@ async function initializeAuth() {
   }
 }
 
-async function submitAuth(action) {
+async function submitAuth() {
   loginError.textContent = "";
   setAuthBusy(true);
 
   try {
-    const endpoint = action === "signup" ? "/api/signup" : "/api/login";
+    const endpoint = authMode === "supabase" ? "/api/auth/continue" : "/api/login";
     const res = await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -565,10 +624,10 @@ function getAuthPayload() {
 function configureAuthForm() {
   const usesEmail = authMode === "supabase";
   loginEmail.hidden = !usesEmail;
-  signupButton.hidden = !usesEmail;
-  loginSubmitButton.textContent = usesEmail ? "로그인" : "입장하기";
+  signupButton.hidden = true;
+  loginSubmitButton.textContent = usesEmail ? "계속하기" : "입장하기";
   loginDescription.textContent = usesEmail
-    ? "이메일로 회원가입하거나 로그인하면 사용할 수 있습니다."
+    ? "가입된 이메일이면 로그인하고, 처음 쓰는 이메일이면 자동으로 회원가입됩니다."
     : "공유 비밀번호를 입력하면 사용할 수 있습니다.";
   loginPassword.placeholder = usesEmail ? "비밀번호" : "공유 비밀번호";
   loginPassword.autocomplete = usesEmail ? "current-password" : "current-password";
@@ -579,7 +638,7 @@ function setAuthBusy(isBusy) {
   loginPassword.disabled = isBusy;
   loginSubmitButton.disabled = isBusy;
   signupButton.disabled = isBusy;
-  loginSubmitButton.textContent = isBusy ? "확인 중" : authMode === "supabase" ? "로그인" : "입장하기";
+  loginSubmitButton.textContent = isBusy ? "확인 중" : authMode === "supabase" ? "계속하기" : "입장하기";
 }
 
 function getAuthFocusTarget() {
