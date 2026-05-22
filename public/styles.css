@@ -588,6 +588,12 @@ h1 {
   border-color: var(--focus-line);
 }
 
+.case-type-button.is-preparing {
+  color: var(--text-muted);
+  background: var(--layer);
+  border-style: dashed;
+}
+
 .case-type-button:disabled {
   cursor: not-allowed;
   opacity: 0.62;

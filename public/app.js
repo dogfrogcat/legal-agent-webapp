@@ -54,32 +54,32 @@ const contentProofDraftButton = document.querySelector("#contentProofDraftButton
 
 const MODE_CONFIG = {
   dispute: {
-    title: "쟁점 정리",
-    status: "사실관계, 핵심 쟁점, 유불리, 다음 절차를 한 번에 정리합니다.",
-    placeholder: "사건 경위, 상대방 주장, 가진 증거, 원하는 결과를 입력하세요. 문서·사진은 + 버튼으로 첨부할 수 있습니다.",
-    submitLabel: "쟁점 정리하기",
-    loading: "쟁점을 정리하고 있습니다. 유리한 사실과 불리한 사실을 나눠서 보고 있어요."
+    title: "사건 정리",
+    status: "상담 전 사실관계, 쟁점, 증거, 질문을 한 번에 정리합니다.",
+    placeholder: "상담 전에 정리할 사건 경위, 상대방 주장, 가진 증거, 원하는 결과를 입력하세요. 문서·사진은 + 버튼으로 첨부할 수 있습니다.",
+    submitLabel: "사건 정리하기",
+    loading: "상담 준비용 사건 노트를 정리하고 있습니다. 사실관계와 증거를 나눠서 보고 있어요."
   },
   precedent: {
-    title: "판례 검색",
-    status: "비슷한 사안의 판례, 법령, 기관 근거를 우선 확인합니다.",
-    placeholder: "찾고 싶은 판례 쟁점, 사건 유형, 인정받고 싶은 논리를 입력하세요. 관련 문서·사진도 첨부할 수 있습니다.",
-    submitLabel: "판례 찾기",
-    loading: "판례와 법령 근거를 찾고 있습니다. 관련 쟁점 중심으로 좁혀볼게요."
+    title: "공식 근거 확인",
+    status: "법령, 판례, 기관 안내 등 공식 근거 후보를 확인합니다.",
+    placeholder: "확인하고 싶은 쟁점, 사건 유형, 필요한 공식 근거를 입력하세요. 관련 문서·사진도 첨부할 수 있습니다.",
+    submitLabel: "근거 확인하기",
+    loading: "공식 근거 후보를 확인하고 있습니다. 단정하지 않고 확인 필요 지점을 나눠볼게요."
   },
   qa: {
-    title: "법률 Q&A",
-    status: "궁금한 점에 바로 답하고, 빠진 사실과 리스크를 짚습니다.",
-    placeholder: "궁금한 법률 질문을 그대로 입력하세요. 계약서·문자·진단서 사진도 함께 볼 수 있습니다.",
-    submitLabel: "답변 받기",
-    loading: "질문을 분석하고 있습니다. 바로 쓸 수 있는 답변으로 정리할게요."
+    title: "질문 정리",
+    status: "상담 전에 물어볼 질문과 빠진 사실을 정리합니다.",
+    placeholder: "상담 전에 정리하고 싶은 질문을 입력하세요. 계약서·문자 사진도 함께 볼 수 있습니다.",
+    submitLabel: "질문 정리하기",
+    loading: "질문을 정리하고 있습니다. 상담 때 확인할 항목으로 바꿔볼게요."
   },
   drafting: {
-    title: "문서 작성",
-    status: "내용증명, 합의문, 조정 의견서, 소송 전 문구를 초안으로 만듭니다.",
-    placeholder: "작성할 문서 종류, 요구사항, 넣고 싶은 사실관계를 입력하세요. 참고 문서 이미지를 첨부할 수 있습니다.",
-    submitLabel: "초안 작성하기",
-    loading: "문서 초안을 작성하고 있습니다. 위험한 표현과 대체 문구를 함께 보겠습니다."
+    title: "문서 준비",
+    status: "최종 문서가 아니라 발송·제출 전 요구사항, 사실관계, 위험 문구를 정리합니다.",
+    placeholder: "준비할 문서 종류, 요구사항, 사실관계를 입력하세요. 참고 문서 이미지를 첨부할 수 있습니다.",
+    submitLabel: "준비안 만들기",
+    loading: "문서 준비안을 정리하고 있습니다. 위험한 표현과 확인할 빈칸을 함께 보겠습니다."
   }
 };
 
@@ -103,7 +103,7 @@ const SOURCE_FALLBACK_TITLES = [
 const CASE_TYPE_CONFIG = {
   general: {
     title: "일반",
-    status: "먼저 사건을 분류한 뒤 필요한 절차와 증거를 잡습니다.",
+    status: "상담·신고·진정 전 필요한 사실관계와 증거를 먼저 정리합니다.",
     hint: "사건 유형을 잘 모르겠으면 그대로 두고 사실관계부터 적어주세요."
   },
   unfairDismissal: {
@@ -117,8 +117,8 @@ const CASE_TYPE_CONFIG = {
     hint: "못 받은 월급·퇴직금·수당 금액과 지급일, 근무기간을 적어주세요."
   },
   fraudProperty: {
-    title: "사기·재산범죄",
-    status: "속인 정황, 피해금, 상대방 특정, 형사와 민사 회수 가능성을 나눠 봅니다.",
+    title: "사기·재산범죄 · 준비 중",
+    status: "넓은 형사·재산범죄 영역은 현재 준비 중입니다. 지금은 인터넷 사기 피해의 상담 전 자료 정리부터 지원합니다.",
     hint: "돈이 오간 날짜, 상대방 말, 입금 내역, 피해금액, 상대방 정보를 적어주세요."
   },
   onlineFraud: {
@@ -127,8 +127,8 @@ const CASE_TYPE_CONFIG = {
     hint: "거래일, 입금 계좌, 상대방 정보, 대화 내용, 배송/환불 약속을 적어주세요."
   },
   voicePhishing: {
-    title: "보이스피싱",
-    status: "지급정지, 피해구제 신청, 경찰 신고, 환급 가능성을 시간순으로 봅니다.",
+    title: "보이스피싱 · 준비 중",
+    status: "보이스피싱은 지급정지 등 긴급 조치가 필요한 고위험 영역이라 현재는 준비 중입니다. 은행·경찰·금감원 상담을 먼저 권합니다.",
     hint: "이체 시간, 은행, 계좌, 지급정지 여부, 경찰 신고 여부를 적어주세요."
   },
   deposit: {
@@ -142,13 +142,13 @@ const CASE_TYPE_CONFIG = {
     hint: "계약일, 결제수단, 환불 요구일, 업체 답변, 약관을 적어주세요."
   },
   medicalBeauty: {
-    title: "의료·미용 피해",
-    status: "설명의무, 동의서, 시술 전후 사진, 진단서, 손해액 범위를 봅니다.",
+    title: "의료·미용 피해 · 준비 중",
+    status: "의료·미용 피해는 고위험 영역이라 현재는 준비 중입니다. 공개 전 전문가 검토 구조를 먼저 붙일 예정입니다.",
     hint: "시술일, 고지 내용, 악화 시점, 진단서 내용, 사진 타임라인을 적어주세요."
   },
   assaultThreatInjury: {
-    title: "폭행·협박·상해",
-    status: "진단서, CCTV, 쌍방 여부, 합의와 처벌불원 효과를 봅니다.",
+    title: "폭행·협박·상해 · 준비 중",
+    status: "형사 고위험 영역이라 현재는 준비 중입니다. 긴급하면 경찰, 변호사, 피해자 지원기관에 먼저 문의하세요.",
     hint: "발생일, 상해 정도, 진단서, CCTV·목격자, 상대방과 합의 여부를 적어주세요."
   },
   defamationInsult: {
@@ -157,48 +157,48 @@ const CASE_TYPE_CONFIG = {
     hint: "게시 위치, 표현 내용, 상대가 누구인지 알 수 있는지, 캡처 여부를 적어주세요."
   },
   sexCrime: {
-    title: "성범죄",
-    status: "동의 여부, 증거, 피해자 보호 또는 피의자 방어 리스크를 신중히 봅니다.",
+    title: "성범죄 · 준비 중",
+    status: "성범죄 영역은 현재 준비 중입니다. 긴급하거나 피해자 안전이 걸렸다면 수사기관·전문기관·변호사 상담을 먼저 권합니다.",
     hint: "일시, 장소, 관계, 동의 여부 쟁점, 메시지·녹취·CCTV 등 증거를 적어주세요."
   },
   stalkingDomestic: {
-    title: "스토킹·가정폭력",
-    status: "반복 연락, 접근금지, 잠정조치, 안전 확보를 우선 봅니다.",
+    title: "스토킹·가정폭력 · 준비 중",
+    status: "안전이 걸린 고위험 영역이라 현재는 준비 중입니다. 긴급하면 112 또는 피해자 지원기관에 먼저 연락하세요.",
     hint: "반복 연락 횟수, 위협 내용, 주거 접근, 신고 기록, 현재 안전 상태를 적어주세요."
   },
   duiTraffic: {
-    title: "음주운전·교통범죄",
-    status: "혈중알코올농도, 사고 여부, 면허처분, 합의와 양형자료를 봅니다.",
+    title: "음주운전·교통범죄 · 준비 중",
+    status: "형사·행정처분 고위험 영역이라 현재는 준비 중입니다. 출석일·처분기한이 있으면 전문가 상담을 먼저 권합니다.",
     hint: "측정 수치, 사고·상해 여부, 과거 전력, 면허 상태, 합의 상황을 적어주세요."
   },
   drugs: {
-    title: "마약",
-    status: "투약·소지·매매 구분, 검사, 공범, 자수·치료자료를 봅니다.",
+    title: "마약 · 준비 중",
+    status: "마약 사건은 형사처벌 위험이 커 현재는 준비 중입니다. 수사 연락이 있다면 변호사 상담을 먼저 권합니다.",
     hint: "물질 종류, 횟수, 시기, 검사 여부, 수사 연락 여부, 공범 관계를 적어주세요."
   },
   embezzlementBreach: {
-    title: "횡령·배임",
-    status: "보관자 지위, 임무위배, 정산자료, 민사와 형사의 경계를 봅니다.",
+    title: "횡령·배임 · 준비 중",
+    status: "민형사 경계가 큰 고위험 영역이라 현재는 준비 중입니다. 회계자료와 전문가 검토가 필요합니다.",
     hint: "맡긴 돈/회사돈 경위, 사용처, 정산 내역, 회사 규정, 상대방 주장을 적어주세요."
   },
   theftExtortionDamage: {
-    title: "절도·공갈·재물손괴",
-    status: "점유 침해, 협박을 통한 재산 이전, 손괴 고의와 피해액을 봅니다.",
+    title: "절도·공갈·재물손괴 · 준비 중",
+    status: "형사 고위험 영역이라 현재는 준비 중입니다. 긴급하거나 조사 일정이 있으면 전문가 상담을 먼저 권합니다.",
     hint: "피해 물건, 피해액, CCTV, 협박 내용, 파손 사진, 합의 여부를 적어주세요."
   },
   criminalProcedure: {
-    title: "형사절차 대응",
-    status: "경찰·검찰 단계, 송치/불송치, 약식명령, 불복 기한을 봅니다.",
+    title: "형사절차 대응 · 준비 중",
+    status: "피의자·피고인 방어권과 기한이 걸린 영역이라 현재는 준비 중입니다. 출석 요구를 받았다면 변호사 상담을 권합니다.",
     hint: "현재 단계, 받은 통지서, 출석일, 사건번호, 원하는 대응 방향을 적어주세요."
   },
   complaintDrafting: {
-    title: "고소장 작성",
-    status: "범죄사실, 고소취지, 증거목록, 무고 리스크를 함께 봅니다.",
+    title: "고소 전 사건 정리 · 준비 중",
+    status: "고소 전 사건 정리 기능은 현재 준비 중입니다. 추후 수사기관 상담용 사실관계 정리안으로 낮춰 제공할 예정입니다.",
     hint: "피고소인 정보, 시간순 사실관계, 증거, 처벌을 원하는 이유를 적어주세요."
   },
   suspectInterview: {
-    title: "피의자 조사 대응",
-    status: "인정/부인 범위, 진술 전략, 조서 수정, 변호인 조력을 봅니다.",
+    title: "피의자 조사 대응 · 준비 중",
+    status: "피의자 조사 대응은 고위험 영역이라 현재는 준비 중입니다. 출석 전 변호사 상담을 먼저 권합니다.",
     hint: "혐의명, 출석요구일, 수사기관 연락 내용, 인정하는 사실과 다투는 사실을 적어주세요."
   },
   contract: {
@@ -207,8 +207,8 @@ const CASE_TYPE_CONFIG = {
     hint: "계약서 조항, 상대방 귀책, 해지 통보 여부, 원하는 결과를 적어주세요."
   },
   criminalComplaint: {
-    title: "형사 고소",
-    status: "구성요건, 증거, 고소장 구조, 역리스크와 합의 전략을 봅니다.",
+    title: "형사 고소 · 준비 중",
+    status: "형사 고소 판단은 현재 준비 중입니다. 지금은 상담용 사실관계 정리로 제한합니다.",
     hint: "일시, 장소, 상대방, 증거, 피해 내용, 원하는 처벌/합의 방향을 적어주세요."
   }
 };
@@ -233,8 +233,8 @@ const CONTENT_PROOF_CONFIG = {
     factsHint: "계약기간, 계약 종료 통지일, 보증금, 전입신고·확정일자, 반환 거절 사유를 적어주세요."
   },
   beauty: {
-    title: "의료·미용 피해 손해배상 요구",
-    caseType: "medicalBeauty",
+    title: "의료·미용 피해 손해배상 요구 · 준비 중",
+    caseType: "general",
     demand: "치료비 및 손해배상 협의",
     factsHint: "시술일, 사전 고지 내용, 악화 시점, 진단서 내용, 업체 답변, 사진 타임라인을 적어주세요."
   },
@@ -257,15 +257,15 @@ const CONTENT_PROOF_CONFIG = {
     factsHint: "합의하려는 금액, 지급일, 향후 청구 유보 여부, 상대방이 넣자고 한 문구를 적어주세요."
   },
   complaint: {
-    title: "고소장 초안",
-    caseType: "complaintDrafting",
-    demand: "범죄사실과 증거목록이 분리된 고소장 초안",
+    title: "고소 전 사건 정리안 · 준비 중",
+    caseType: "general",
+    demand: "수사기관 또는 변호사 상담용 사실관계와 증거목록 정리",
     factsHint: "피고소인 정보, 사건 일시·장소, 상대방 말과 행동, 피해 내용, 보유 증거를 시간순으로 적어주세요."
   },
   laborPetition: {
-    title: "노동청 진정서",
+    title: "노동청 진정 전 준비사항",
     caseType: "unpaidWages",
-    demand: "미지급 임금에 대한 노동청 진정서 초안",
+    demand: "미지급 임금에 대한 노동청 상담·진정 전 준비사항 정리",
     factsHint: "회사명, 근무기간, 임금 약정, 체불 항목과 금액, 사업주 답변, 퇴사 여부를 적어주세요."
   },
   consumerApplication: {
@@ -281,9 +281,9 @@ const CONTENT_PROOF_CONFIG = {
     factsHint: "돈을 받을 근거, 금액, 변제기, 상대방 주소, 송금내역·계약서·확인 문자 등 증거를 적어주세요."
   },
   lawsuitFacts: {
-    title: "소장용 사실관계 정리",
+    title: "소 제기 전 사실관계 정리",
     caseType: "general",
-    demand: "청구취지·청구원인 작성 전 사실관계 정리",
+    demand: "전문가 상담 전 청구 근거와 사실관계 정리",
     factsHint: "원고/피고, 청구금액, 사건 경위, 상대방 귀책, 손해액, 증거를 시간순으로 적어주세요."
   }
 };
@@ -317,16 +317,16 @@ const CASE_CATEGORY_DEFAULTS = {
   labor: "unpaidWages",
   housing: "deposit",
   consumer: "consumer",
-  criminal: "fraudProperty",
+  criminal: "onlineFraud",
   document: "contract"
 };
 
 const QUICKSTART_CONFIG = {
   damage: {
     mode: "dispute",
-    caseType: "medicalBeauty",
+    caseType: "consumer",
     text: [
-      "피해 사건을 쟁점 정리해줘.",
+      "상담 전에 피해 사건을 정리해줘.",
       "",
       "- 사건 유형:",
       "- 발생일:",
@@ -336,14 +336,14 @@ const QUICKSTART_CONFIG = {
       "- 상대방 주장 또는 답변:",
       "- 원하는 결과:",
       "",
-      "일부승소 가능성, 책임비율, 현실적 합의선, 지금 해야 할 행동을 나눠서 알려줘."
+      "사실관계 요약, 확인할 쟁점, 증거 체크리스트, 상담 때 물어볼 질문을 나눠서 알려줘."
     ].join("\n")
   },
   money: {
     mode: "dispute",
     caseType: "unpaidWages",
     text: [
-      "돈을 받기 위한 절차를 정리해줘.",
+      "돈을 받기 전에 상담·신고 준비자료를 정리해줘.",
       "",
       "- 받을 돈의 종류:",
       "- 금액:",
@@ -352,31 +352,31 @@ const QUICKSTART_CONFIG = {
       "- 계약서/문자/송금내역 등 증거:",
       "- 지금까지 한 요구:",
       "",
-      "노동청, 내용증명, 지급명령, 소송 중 어떤 순서가 유리한지 알려줘."
+      "사실관계 요약, 증거 체크리스트, 기관 상담 전 질문, 다음 행동 후보를 알려줘."
     ].join("\n")
   },
   criminal: {
     mode: "dispute",
-    caseType: "fraudProperty",
+    caseType: "onlineFraud",
     text: [
-      "형사 고소 또는 형사절차 대응 가능성을 검토해줘.",
+      "인터넷 사기 피해를 신고·상담 전에 정리해줘.",
       "",
-      "- 혐의 또는 사건 유형:",
-      "- 발생일과 장소:",
-      "- 상대방이 한 말/행동:",
-      "- 피해 내용:",
+      "- 거래일:",
+      "- 입금 금액과 계좌:",
+      "- 상대방 정보:",
+      "- 대화 내용:",
+      "- 배송/환불 약속:",
       "- 증거:",
-      "- 현재 경찰/검찰 단계:",
       "- 내가 원하는 결과:",
       "",
-      "범죄 성립 가능성, 증거 부족한 부분, 고소 전 리스크, 민사와 병행할지 알려줘."
+      "신고 전 준비할 자료, 경찰 상담 때 물어볼 질문, 민사 회수 전 확인사항을 알려줘."
     ].join("\n")
   },
   document: {
     mode: "drafting",
     caseType: "consumer",
     text: [
-      "아래 내용을 바탕으로 제출 또는 발송 가능한 문서 초안을 만들어줘.",
+      "아래 내용을 바탕으로 상담·발송 전 문서 준비안을 만들어줘.",
       "",
       "- 문서 종류:",
       "- 상대방:",
@@ -385,14 +385,14 @@ const QUICKSTART_CONFIG = {
       "- 보유 증거:",
       "- 피하고 싶은 문구:",
       "",
-      "위험한 표현은 순화하고, 빈 정보는 [확인 필요]로 남겨줘."
+      "최종 제출 문서처럼 단정하지 말고, 위험한 표현은 순화하고, 빈 정보는 [확인 필요]로 남겨줘."
     ].join("\n")
   }
 };
 
 const RESPONSE_ACTIONS = [
   { id: "nextSteps", label: "다음 행동 제안" },
-  { id: "notice", label: "내용증명으로 만들기" },
+  { id: "notice", label: "내용증명 준비안" },
   { id: "evidence", label: "증거 체크리스트" },
   { id: "rebuttal", label: "상대방 반박 예상" },
   { id: "settlement", label: "합의문 문구 검토" },
@@ -413,6 +413,11 @@ caseCategoryButtons.forEach((button) => {
 
 caseTypeButtons.forEach((button) => {
   button.addEventListener("click", () => {
+    if (button.dataset.preparing === "true") {
+      showPreparingCaseType(button.dataset.caseType);
+      return;
+    }
+
     setCaseType(button.dataset.caseType);
   });
 });
@@ -739,8 +744,8 @@ async function handleResponseAction(actionId, answerText) {
       "오늘 할 일, 3일 안에 할 일, 하지 말아야 할 일을 나눠서 제안하고, 각 행동의 이유와 우선순위도 알려줘."
     ],
     notice: [
-      "위 답변과 내 사건을 바탕으로 내용증명 초안을 만들어줘.",
-      "상대방이 읽어도 과격하지 않게 쓰고, 위험한 문구와 대체 문구도 같이 알려줘."
+      "위 답변과 내 사건을 바탕으로 내용증명 발송 전 준비안을 만들어줘.",
+      "최종 발송 문서처럼 단정하지 말고, 요구사항·사실관계·증거·위험 문구와 대체 문구를 나눠서 알려줘."
     ],
     evidence: [
       "위 답변 기준으로 증거 체크리스트를 만들어줘.",
@@ -766,7 +771,7 @@ async function handleResponseAction(actionId, answerText) {
 
 function buildPendingSteps() {
   if (deepResearch.checked) {
-    return ["사실관계 정리", "공식 근거 검색", "전략 범위 계산"];
+    return ["사실관계 정리", "공식 근거 확인", "상담 질문 구성"];
   }
 
   if (geminiReview.checked) {
@@ -774,14 +779,14 @@ function buildPendingSteps() {
   }
 
   if (mode === "drafting") {
-    return ["사실관계 정리", "위험 문구 점검", "문서 초안 구성"];
+    return ["사실관계 정리", "위험 문구 점검", "문서 준비안 구성"];
   }
 
   if (mode === "precedent") {
-    return ["쟁점 추출", "근거 후보 확인", "판단 요지 정리"];
+    return ["쟁점 추출", "근거 후보 확인", "확인 필요 지점 정리"];
   }
 
-  return ["사실관계 정리", "플레이북 확인", "답변 구성"];
+  return ["사실관계 정리", "플레이북 확인", "상담 준비안 구성"];
 }
 
 function renderThinkingBubble(container, text, steps = []) {
@@ -1364,9 +1369,9 @@ function buildContentProofPrompt(config) {
   const isNotice = ["refund", "wage", "deposit", "beauty", "defamation", "loan"].includes(contentProofType.value);
 
   return [
-    `${config.title} 검토용 초안을 작성해줘.`,
+    `${config.title} 검토용 준비안을 작성해줘.`,
     "",
-    "문서 작성 조건:",
+    "문서 준비 조건:",
     `- 문서 유형: ${config.title}`,
     `- 문서 강도: ${toneLabel}`,
     `- 발신인: ${valueOrBlank(contentProofSender.value)}`,
@@ -1382,15 +1387,15 @@ function buildContentProofPrompt(config) {
     valueOrBlank(contentProofEvidence.value),
     "",
     "작성 방식:",
-    "- 첫 줄에 '검토용 초안'이라고 표시해줘.",
+    "- 첫 줄에 '상담·발송 전 검토용 준비안'이라고 표시해줘.",
     isNotice
-      ? "- 제목, 발신인, 수신인, 통지 취지, 사실관계, 요구사항, 답변기한, 미이행 시 조치, 첨부자료, 발송 전 체크리스트 순서로 작성해줘."
-      : "- 제목, 작성 목적, 당사자, 사실관계, 핵심 쟁점, 요구사항 또는 신청취지, 증거목록, 제출 전 체크리스트 순서로 작성해줘.",
+      ? "- 제목 후보, 당사자 정보 확인, 통지 취지, 사실관계, 요구사항, 답변기한, 첨부자료, 발송 전 체크리스트 순서로 정리해줘."
+      : "- 제목 후보, 작성 목적, 당사자 정보 확인, 사실관계, 핵심 쟁점, 요구사항, 증거목록, 제출 전 체크리스트 순서로 정리해줘.",
     "- 비난·협박·모욕 표현은 빼고, 기관이나 법원이 읽어도 차분한 문장으로 써줘.",
     "- 빈 정보는 임의로 만들지 말고 [확인 필요]로 남겨줘.",
     isNotice
       ? "- 내용증명은 권리를 확정하는 문서가 아니라 발송한 내용과 시점을 증명하는 수단이라는 한계를 짧게 설명해줘."
-      : "- 이 초안은 제출 전 검토용이고, 실제 제출 형식과 관할 기관 요구사항은 최신 양식으로 확인해야 한다고 설명해줘.",
+      : "- 이 준비안은 제출 전 검토용이고, 실제 제출 형식과 관할 기관 요구사항은 최신 양식으로 확인해야 한다고 설명해줘.",
     "- 위험한 문구 3개와 대체 문구 3개를 마지막에 제시해줘.",
     "- 실제 발송 전 확인할 항목과 변호사 상담이 필요한 경우도 덧붙여줘."
   ].join("\n");
@@ -1434,7 +1439,7 @@ function setCaseCategory(nextCategory = "all", options = {}) {
     const itemCategory = item.dataset.caseCategory || "all";
     const isVisible = activeCaseCategory === "all" || itemCategory === activeCaseCategory;
     item.hidden = !isVisible;
-    if (isVisible) visibleCaseTypes.push(item.dataset.caseType);
+    if (isVisible && item.dataset.preparing !== "true") visibleCaseTypes.push(item.dataset.caseType);
   });
 
   if (shouldSelectDefault && !visibleCaseTypes.includes(caseType)) {
@@ -1444,7 +1449,23 @@ function setCaseCategory(nextCategory = "all", options = {}) {
   }
 }
 
+function showPreparingCaseType(nextCaseType) {
+  const config = CASE_TYPE_CONFIG[nextCaseType] || CASE_TYPE_CONFIG.general;
+  const title = config.title.replace(/\s*·\s*준비 중$/, "");
+  caseStatusText.textContent = `${title} 영역은 현재 준비 중입니다. 지금은 임금체불, 부당해고, 전세·보증금, 계약 해지·환불, 인터넷 사기, 명예훼손·모욕 중심으로 상담 전 자료 정리를 지원합니다.`;
+  updateCaseFileStatus("고위험 사건 유형은 준비 중입니다. 먼저 상담용 사실관계와 증거를 정리하는 범위부터 열어둘게요.");
+}
+
+function isPreparingCaseType(nextCaseType) {
+  return caseTypeButtons.some((item) => item.dataset.caseType === nextCaseType && item.dataset.preparing === "true");
+}
+
 function setCaseType(nextCaseType, options = {}) {
+  if (isPreparingCaseType(nextCaseType) && !options.allowPreparing) {
+    showPreparingCaseType(nextCaseType);
+    nextCaseType = "general";
+  }
+
   caseType = nextCaseType;
   const config = CASE_TYPE_CONFIG[caseType] || CASE_TYPE_CONFIG.general;
   const selectedButton = caseTypeButtons.find((item) => item.dataset.caseType === caseType);

@@ -3,18 +3,18 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>한국법 법률 어시스턴트</title>
-    <meta name="description" content="한국법 기준으로 쟁점 정리, 판례 검색, 법률 Q&A, 문서 작성을 돕는 법률 정보 정리 보조 도구입니다." />
+    <title>법률 상담 준비 AI</title>
+    <meta name="description" content="변호사·노무사·기관 상담 전 사실관계, 증거, 질문, 공식 근거를 정리하는 AI 준비 도구입니다." />
     <link rel="canonical" href="https://legal-agent-webapp.onrender.com/" />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="ko_KR" />
-    <meta property="og:site_name" content="한국법 법률 어시스턴트" />
-    <meta property="og:title" content="한국법 법률 어시스턴트" />
-    <meta property="og:description" content="한국법 기준으로 쟁점 정리, 판례 검색, 법률 Q&A, 문서 작성을 돕는 법률 정보 정리 보조 도구입니다." />
+    <meta property="og:site_name" content="법률 상담 준비 AI" />
+    <meta property="og:title" content="법률 상담 준비 AI" />
+    <meta property="og:description" content="변호사·노무사·기관 상담 전 사실관계, 증거, 질문, 공식 근거를 정리하는 AI 준비 도구입니다." />
     <meta property="og:url" content="https://legal-agent-webapp.onrender.com/" />
     <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="한국법 법률 어시스턴트" />
-    <meta name="twitter:description" content="한국법 기준으로 쟁점 정리, 판례 검색, 법률 Q&A, 문서 작성을 돕는 법률 정보 정리 보조 도구입니다." />
+    <meta name="twitter:title" content="법률 상담 준비 AI" />
+    <meta name="twitter:description" content="변호사·노무사·기관 상담 전 사실관계, 증거, 질문, 공식 근거를 정리하는 AI 준비 도구입니다." />
     <script>
       try {
         document.documentElement.dataset.theme = localStorage.getItem("legalAgentTheme") === "dark" ? "dark" : "light";
@@ -28,7 +28,7 @@
     <section id="loginGate" class="login-gate" hidden>
       <form id="loginForm" class="login-card">
         <div class="mark" aria-hidden="true">L</div>
-        <h1>한국법 법률 어시스턴트</h1>
+        <h1>법률 상담 준비 AI</h1>
         <p id="loginDescription">이메일과 비밀번호를 입력하면 가입된 계정은 로그인되고, 처음 쓰는 이메일은 회원가입됩니다.</p>
         <input id="loginEmail" type="email" autocomplete="email" placeholder="이메일" hidden />
         <input id="loginPassword" type="password" autocomplete="current-password" placeholder="비밀번호" />
@@ -43,9 +43,9 @@
           <summary>개인정보 처리 안내 보기</summary>
           <ul>
             <li>계정 로그인에는 이메일과 인증 세션 정보가 사용됩니다.</li>
-            <li>입력한 질문, 문서, 첨부 이미지는 답변 생성을 위해 AI API와 검색 처리에 사용될 수 있습니다.</li>
-            <li>이 앱은 별도 상담 DB 저장 기능을 두지 않았지만, 인증·서버·API 제공자의 처리 기록은 남을 수 있습니다.</li>
-            <li>실제 공개 서비스 운영 전에는 정식 개인정보처리방침과 이용약관을 별도로 마련해야 합니다.</li>
+            <li>입력한 질문, 문서, 첨부 이미지는 상담 준비안 생성을 위해 AI API와 검색 처리에 사용될 수 있습니다.</li>
+            <li>사건 파일함에 저장한 대화는 계정에 연결되어 보관될 수 있습니다.</li>
+            <li>실제 공개 서비스 운영 전에는 정식 개인정보처리방침, 삭제 기능, 이용약관을 별도로 마련해야 합니다.</li>
           </ul>
         </details>
         <button id="loginSubmitButton" class="primary" type="submit">로그인 / 회원가입</button>
@@ -89,8 +89,8 @@
         <div class="brand">
           <div class="mark" aria-hidden="true">L</div>
           <div>
-            <h1>한국법 법률 어시스턴트</h1>
-            <p>사건을 정리하고 다음 행동을 제안하는 AI 에이전트형 도구</p>
+            <h1>법률 상담 준비 AI</h1>
+            <p>변호사·노무사·기관 상담 전 사실관계와 증거를 정리하는 도구</p>
           </div>
         </div>
 
@@ -143,24 +143,24 @@
       </header>
 
       <nav class="mode-nav" aria-label="작업 모드">
-        <button class="mode-button active" data-mode="dispute" aria-pressed="true" type="button">쟁점 정리</button>
-        <button class="mode-button" data-mode="precedent" aria-pressed="false" type="button">판례 검색</button>
-        <button class="mode-button" data-mode="qa" aria-pressed="false" type="button">법률 Q&A</button>
-        <button class="mode-button" data-mode="drafting" aria-pressed="false" type="button">문서 작성</button>
+        <button class="mode-button active" data-mode="dispute" aria-pressed="true" type="button">사건 정리</button>
+        <button class="mode-button" data-mode="precedent" aria-pressed="false" type="button">공식 근거 확인</button>
+        <button class="mode-button" data-mode="qa" aria-pressed="false" type="button">질문 정리</button>
+        <button class="mode-button" data-mode="drafting" aria-pressed="false" type="button">문서 준비</button>
       </nav>
 
       <section class="case-selector" aria-label="사건 유형">
         <div class="case-selector-header">
           <strong>사건 유형</strong>
-          <span id="caseStatusText">먼저 사건을 분류한 뒤 필요한 절차와 증거를 잡습니다.</span>
+          <span id="caseStatusText">상담·신고·진정 전 필요한 사실관계와 증거를 먼저 정리합니다.</span>
         </div>
         <div class="case-category-nav" aria-label="사건 유형 분류">
           <button class="case-category-button active" data-case-category="all" aria-pressed="true" type="button">전체</button>
           <button class="case-category-button" data-case-category="labor" aria-pressed="false" type="button">노동</button>
           <button class="case-category-button" data-case-category="housing" aria-pressed="false" type="button">부동산</button>
-          <button class="case-category-button" data-case-category="consumer" aria-pressed="false" type="button">소비자·의료</button>
-          <button class="case-category-button" data-case-category="criminal" aria-pressed="false" type="button">형사</button>
-          <button class="case-category-button" data-case-category="document" aria-pressed="false" type="button">문서</button>
+          <button class="case-category-button" data-case-category="consumer" aria-pressed="false" type="button">소비자</button>
+          <button class="case-category-button" data-case-category="criminal" aria-pressed="false" type="button">온라인·명예</button>
+          <button class="case-category-button" data-case-category="document" aria-pressed="false" type="button">문서 준비</button>
         </div>
         <div id="caseNav" class="case-nav case-nav-panel">
           <button class="case-type-button active" data-case-category="all" data-case-type="general" aria-pressed="true" type="button">일반</button>
@@ -168,33 +168,33 @@
           <button class="case-type-button" data-case-category="labor" data-case-type="unpaidWages" aria-pressed="false" type="button">임금체불</button>
           <button class="case-type-button" data-case-category="housing" data-case-type="deposit" aria-pressed="false" type="button">전세·보증금</button>
           <button class="case-type-button" data-case-category="consumer" data-case-type="consumer" aria-pressed="false" type="button">소비자 피해</button>
-          <button class="case-type-button" data-case-category="consumer" data-case-type="medicalBeauty" aria-pressed="false" type="button">의료·미용 피해</button>
+          <button class="case-type-button is-preparing" data-case-category="consumer" data-case-type="medicalBeauty" data-preparing="true" aria-pressed="false" type="button" title="고위험 영역이라 준비 중입니다.">의료·미용 피해 · 준비 중</button>
           <button class="case-type-button" data-case-category="document" data-case-type="contract" aria-pressed="false" type="button">계약 해지</button>
-          <button class="case-type-button" data-case-category="criminal" data-case-type="fraudProperty" aria-pressed="false" type="button">사기·재산범죄</button>
+          <button class="case-type-button is-preparing" data-case-category="criminal" data-case-type="fraudProperty" data-preparing="true" aria-pressed="false" type="button" title="넓은 형사 영역이라 준비 중입니다. 인터넷 사기부터 지원합니다.">사기·재산범죄 · 준비 중</button>
           <button class="case-type-button" data-case-category="criminal" data-case-type="onlineFraud" aria-pressed="false" type="button">인터넷 사기</button>
-          <button class="case-type-button" data-case-category="criminal" data-case-type="voicePhishing" aria-pressed="false" type="button">보이스피싱</button>
-          <button class="case-type-button" data-case-category="criminal" data-case-type="assaultThreatInjury" aria-pressed="false" type="button">폭행·협박·상해</button>
+          <button class="case-type-button is-preparing" data-case-category="criminal" data-case-type="voicePhishing" data-preparing="true" aria-pressed="false" type="button" title="고위험 영역이라 준비 중입니다.">보이스피싱 · 준비 중</button>
+          <button class="case-type-button is-preparing" data-case-category="criminal" data-case-type="assaultThreatInjury" data-preparing="true" aria-pressed="false" type="button" title="고위험 영역이라 준비 중입니다.">폭행·협박·상해 · 준비 중</button>
           <button class="case-type-button" data-case-category="criminal" data-case-type="defamationInsult" aria-pressed="false" type="button">명예훼손·모욕</button>
-          <button class="case-type-button" data-case-category="criminal" data-case-type="sexCrime" aria-pressed="false" type="button">성범죄</button>
-          <button class="case-type-button" data-case-category="criminal" data-case-type="stalkingDomestic" aria-pressed="false" type="button">스토킹·가정폭력</button>
-          <button class="case-type-button" data-case-category="criminal" data-case-type="duiTraffic" aria-pressed="false" type="button">음주운전·교통범죄</button>
-          <button class="case-type-button" data-case-category="criminal" data-case-type="drugs" aria-pressed="false" type="button">마약</button>
-          <button class="case-type-button" data-case-category="criminal" data-case-type="embezzlementBreach" aria-pressed="false" type="button">횡령·배임</button>
-          <button class="case-type-button" data-case-category="criminal" data-case-type="theftExtortionDamage" aria-pressed="false" type="button">절도·공갈·재물손괴</button>
-          <button class="case-type-button" data-case-category="criminal" data-case-type="criminalProcedure" aria-pressed="false" type="button">형사절차 대응</button>
-          <button class="case-type-button" data-case-category="document" data-case-type="complaintDrafting" aria-pressed="false" type="button">고소장 작성</button>
-          <button class="case-type-button" data-case-category="criminal" data-case-type="suspectInterview" aria-pressed="false" type="button">피의자 조사 대응</button>
+          <button class="case-type-button is-preparing" data-case-category="criminal" data-case-type="sexCrime" data-preparing="true" aria-pressed="false" type="button" title="고위험 영역이라 준비 중입니다.">성범죄 · 준비 중</button>
+          <button class="case-type-button is-preparing" data-case-category="criminal" data-case-type="stalkingDomestic" data-preparing="true" aria-pressed="false" type="button" title="고위험 영역이라 준비 중입니다.">스토킹·가정폭력 · 준비 중</button>
+          <button class="case-type-button is-preparing" data-case-category="criminal" data-case-type="duiTraffic" data-preparing="true" aria-pressed="false" type="button" title="고위험 영역이라 준비 중입니다.">음주운전·교통범죄 · 준비 중</button>
+          <button class="case-type-button is-preparing" data-case-category="criminal" data-case-type="drugs" data-preparing="true" aria-pressed="false" type="button" title="고위험 영역이라 준비 중입니다.">마약 · 준비 중</button>
+          <button class="case-type-button is-preparing" data-case-category="criminal" data-case-type="embezzlementBreach" data-preparing="true" aria-pressed="false" type="button" title="고위험 영역이라 준비 중입니다.">횡령·배임 · 준비 중</button>
+          <button class="case-type-button is-preparing" data-case-category="criminal" data-case-type="theftExtortionDamage" data-preparing="true" aria-pressed="false" type="button" title="고위험 영역이라 준비 중입니다.">절도·공갈·재물손괴 · 준비 중</button>
+          <button class="case-type-button is-preparing" data-case-category="criminal" data-case-type="criminalProcedure" data-preparing="true" aria-pressed="false" type="button" title="고위험 영역이라 준비 중입니다.">형사절차 대응 · 준비 중</button>
+          <button class="case-type-button is-preparing" data-case-category="document" data-case-type="complaintDrafting" data-preparing="true" aria-pressed="false" type="button" title="고소 전 사건 정리 기능은 준비 중입니다.">고소 전 사건 정리 · 준비 중</button>
+          <button class="case-type-button is-preparing" data-case-category="criminal" data-case-type="suspectInterview" data-preparing="true" aria-pressed="false" type="button" title="고위험 영역이라 준비 중입니다.">피의자 조사 대응 · 준비 중</button>
         </div>
       </section>
 
       <section class="workspace" aria-label="채팅">
         <div id="modeStatus" class="mode-status">
-          <strong id="modeStatusTitle">쟁점 정리</strong>
-          <span id="modeStatusText">사실관계, 핵심 쟁점, 유불리, 다음 절차를 한 번에 정리합니다.</span>
+          <strong id="modeStatusTitle">사건 정리</strong>
+          <span id="modeStatusText">상담 전 사실관계, 쟁점, 증거, 질문을 한 번에 정리합니다.</span>
         </div>
 
         <div class="notice">
-          법률 정보 정리 보조용입니다. 소송 기한, 형사 사건, 큰 금전 손실이 걸린 사안은 변호사 상담을 권장합니다.
+          이 서비스는 법률 판단이나 변호사 자문을 제공하지 않습니다. 상담·신고·진정 전 사실관계, 증거, 질문, 공식 근거를 정리하는 준비 도구입니다.
         </div>
 
         <section id="quickStartPanel" class="quickstart-panel" aria-label="첫 질문 도우미">
@@ -205,28 +205,28 @@
           <div class="quickstart-grid">
             <button class="quickstart-card" data-quickstart="damage" type="button">
               <strong>피해를 입었어요</strong>
-              <span>손해배상, 합의선, 증거를 먼저 잡습니다.</span>
+              <span>피해 경위와 증거, 상담 때 물어볼 질문을 먼저 정리합니다.</span>
             </button>
             <button class="quickstart-card" data-quickstart="money" type="button">
               <strong>돈을 못 받았어요</strong>
-              <span>임금, 보증금, 대여금 회수 절차를 정리합니다.</span>
+              <span>임금, 보증금, 대여금 관련 사실관계와 증거를 정리합니다.</span>
             </button>
             <button class="quickstart-card" data-quickstart="criminal" type="button">
-              <strong>고소·형사 대응이 필요해요</strong>
-              <span>구성요건, 증거, 조사 대응을 나눠 봅니다.</span>
+              <strong>인터넷 사기를 정리하고 싶어요</strong>
+              <span>신고·상담 전 입금내역, 대화, 상대방 정보를 정리합니다.</span>
             </button>
             <button class="quickstart-card" data-quickstart="document" type="button">
-              <strong>문서를 만들고 싶어요</strong>
-              <span>내용증명, 고소장, 합의서 초안으로 이어집니다.</span>
+              <strong>문서 준비가 필요해요</strong>
+              <span>내용증명 전 요구사항과 제출 전 준비사항을 정리합니다.</span>
             </button>
           </div>
         </section>
 
-        <section id="documentToolbox" class="document-toolbox" aria-label="문서 작성 도구" hidden>
+        <section id="documentToolbox" class="document-toolbox" aria-label="문서 준비 도구" hidden>
           <div class="toolbox-head">
             <div>
-              <strong>문서 작성기</strong>
-              <span>내용증명, 합의서, 고소장, 진정서, 신청서 초안을 검토용으로 만듭니다.</span>
+              <strong>문서 준비기</strong>
+              <span>최종 제출 문서가 아니라 상담·발송 전 확인할 요구사항과 위험 문구를 정리합니다.</span>
             </div>
             <label>
               문서 강도
@@ -245,15 +245,15 @@
                 <option value="refund">계약 해지·환불 요구</option>
                 <option value="wage">임금체불 지급 요구</option>
                 <option value="deposit">전세·보증금 반환 요구</option>
-                <option value="beauty">의료·미용 피해 손해배상 요구</option>
+                <option value="beauty" disabled>의료·미용 피해 손해배상 요구 · 준비 중</option>
                 <option value="defamation">게시물 삭제·명예훼손 중단 요청</option>
                 <option value="loan">대여금 변제 요구</option>
                 <option value="settlement">합의서 위험문구 검토</option>
-                <option value="complaint">고소장 초안</option>
-                <option value="laborPetition">노동청 진정서</option>
+                <option value="complaint" disabled>고소 전 사건 정리 · 준비 중</option>
+                <option value="laborPetition">노동청 진정 전 준비사항</option>
                 <option value="consumerApplication">소비자원 피해구제 신청서</option>
                 <option value="paymentOrder">지급명령 신청 전 정리</option>
-                <option value="lawsuitFacts">소장용 사실관계 정리</option>
+                <option value="lawsuitFacts">소 제기 전 사실관계 정리</option>
               </select>
             </label>
             <label>
@@ -288,7 +288,7 @@
 
           <div class="toolbox-actions">
             <button id="contentProofFillButton" class="ghost-button" type="button">입력창에 채우기</button>
-            <button id="contentProofDraftButton" class="primary" type="button">문서 초안 만들기</button>
+            <button id="contentProofDraftButton" class="primary" type="button">준비안 만들기</button>
           </div>
         </section>
 
@@ -296,7 +296,7 @@
           <article class="message assistant">
             <div class="avatar">AI</div>
             <div class="bubble">
-              <p>사실관계나 문서를 붙여주세요. 한국법 기준으로 쟁점, 근거, 다음 행동을 쉽게 정리해드릴게요.</p>
+              <p>사실관계나 문서를 붙여주세요. 상담·신고·진정 전에 정리할 쟁점, 근거, 증거, 질문을 쉽게 정리해드릴게요.</p>
             </div>
           </article>
         </section>
@@ -305,7 +305,7 @@
           <div id="attachmentPreview" class="attachment-preview" aria-live="polite"></div>
           <textarea
             id="messageInput"
-            placeholder="사건 경위, 상대방 주장, 가진 증거, 원하는 결과를 입력하세요. 문서나 사진은 + 버튼으로 첨부할 수 있습니다."
+            placeholder="상담 전에 정리할 사건 경위, 상대방 주장, 가진 증거, 원하는 결과를 입력하세요. 문서나 사진은 + 버튼으로 첨부할 수 있습니다."
             rows="5"
           ></textarea>
           <div class="composer-actions">
@@ -314,7 +314,7 @@
               ＋
             </button>
             <span class="composer-note">주민등록번호, 계좌번호 등 민감정보는 제외하세요.</span>
-            <button id="sendButton" class="primary" type="submit">분석하기</button>
+            <button id="sendButton" class="primary" type="submit">정리하기</button>
           </div>
         </form>
       </section>
